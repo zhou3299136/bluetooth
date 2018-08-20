@@ -30,13 +30,17 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.MainActivity"
-            android:screenOrientation="portrait"
-            />
+        <!--<activity android:name=".activity.MainActivity"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--/>-->
         <activity android:name=".activity.DeviceListActivity"
             android:label="选取连接设备"
             android:theme="@android:style/Theme.Dialog"
             android:configChanges="orientation|keyboardHidden"
+            />
+
+        <activity android:name=".frag.HomeVideoFrag"
+            android:screenOrientation="portrait"
             />
 
     </application>

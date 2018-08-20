@@ -1,6 +1,5 @@
 package control.camera.com.comcameracontrol.utls;
 
-import java.security.PublicKey;
 
 public class Context {
 
@@ -38,8 +37,8 @@ public class Context {
     public static  String SYZS="$SYZS#";//拍摄张数值
     public static  String SYKS="$SYKS#";//快门时间数值
 
-
-
+    public static String ADDRESS="";
+    public final static String MY_UUID = "00001101-0000-1000-8000-00805F9B34FB";   //SPP服务UUID号
 
 
 

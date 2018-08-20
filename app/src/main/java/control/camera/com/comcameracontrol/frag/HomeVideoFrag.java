@@ -1,9 +1,17 @@
 package control.camera.com.comcameracontrol.frag;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +23,13 @@ import android.widget.TextView;
 /**
  * 视频模式
  */
+import java.io.IOException;
+import java.io.OutputStream;
+import control.camera.com.comcameracontrol.App;
 import control.camera.com.comcameracontrol.R;
+import control.camera.com.comcameracontrol.utls.Context;
 
-public class HomeVideoFrag extends Fragment implements View.OnClickListener {
+public class HomeVideoFrag extends AppCompatActivity implements View.OnClickListener {
 
     private View MyView;
     private static HomeVideoFrag self;
@@ -50,51 +62,67 @@ public class HomeVideoFrag extends Fragment implements View.OnClickListener {
     public boolean IsShutterSelected = false;
     public boolean IsCourseSelected = false;
 
+    private String smsg = "";    //显示用数据缓存
+    boolean bRun = true;
+    boolean bThread = false;
+    private String fmsg = "";    //保存用数据缓存
 
-    public static HomeVideoFrag getInstance() {
-        if (self == null) {
-            self = new HomeVideoFrag();
-        }
-        return self;
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        MyView = inflater.inflate(R.layout.frag_video, container, false);
-        return MyView;
-    }
+//    public static HomeVideoFrag getInstance() {
+//        if (self == null) {
+//            self = new HomeVideoFrag();
+//        }
+//        return self;
+//    }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.frag_video);
         initView();
         InitData();
+        onSendButtonClicked(Context.handshake);
+//        onSendButtonClicked(Context.handshake);
     }
+
+    //    @Nullable
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+//        MyView = inflater.inflate(R.layout.frag_video, container, false);
+//        return MyView;
+//    }
+
+//    @Override
+////    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+////        super.onViewCreated(view, savedInstanceState);
+////        initView();
+////        InitData();
+//////        onSendButtonClicked(Context.handshake);
+////    }
+
 
 
     public void initView() {
-        frag_video_quantity = MyView.findViewById(R.id.frag_video_quantity);
-        frag_video_quantity_progress = MyView.findViewById(R.id.frag_video_quantity_progress);
+        frag_video_quantity = findViewById(R.id.frag_video_quantity);
+        frag_video_quantity_progress = findViewById(R.id.frag_video_quantity_progress);
 
-        video_speed = MyView.findViewById(R.id.video_speed);
-        frag_video_quantity_speed = MyView.findViewById(R.id.frag_video_quantity_speed);
+        video_speed = findViewById(R.id.video_speed);
+        frag_video_quantity_speed =findViewById(R.id.frag_video_quantity_speed);
 
-        video_ab = MyView.findViewById(R.id.video_ab);
-        video_ab_im = MyView.findViewById(R.id.video_ab_im);
+        video_ab = findViewById(R.id.video_ab);
+        video_ab_im = findViewById(R.id.video_ab_im);
 
-        video_start = MyView.findViewById(R.id.video_start);
-        video_start_im = MyView.findViewById(R.id.video_start_im);
-        video_start_tv = MyView.findViewById(R.id.video_start_tv);
+        video_start = findViewById(R.id.video_start);
+        video_start_im = findViewById(R.id.video_start_im);
+        video_start_tv = findViewById(R.id.video_start_tv);
 
-        video_ba = MyView.findViewById(R.id.video_ba);
-        video_ba_im = MyView.findViewById(R.id.video_ba_im);
+        video_ba = findViewById(R.id.video_ba);
+        video_ba_im = findViewById(R.id.video_ba_im);
 
-        video_shutter = MyView.findViewById(R.id.video_shutter);
-        video_shutter_im = MyView.findViewById(R.id.video_shutter_im);
+        video_shutter = findViewById(R.id.video_shutter);
+        video_shutter_im = findViewById(R.id.video_shutter_im);
 
-        video_course = MyView.findViewById(R.id.video_course);
-        video_course_course = MyView.findViewById(R.id.video_course_course);
+        video_course = findViewById(R.id.video_course);
+        video_course_course = findViewById(R.id.video_course_course);
 
         video_ab.setOnClickListener(this);
         video_start.setOnClickListener(this);
@@ -106,8 +134,76 @@ public class HomeVideoFrag extends Fragment implements View.OnClickListener {
 
     public void InitData() {
 
+        if (bThread == false) {
+            readThread.start();
+            bThread = true;
+        } else {
+            bRun = true;
+        }
+
 
     }
+
+    //接收数据线程
+    //接收数据线程
+    Thread readThread = new Thread() {
+
+        public void run() {
+            int num = 0;
+            byte[] buffer = new byte[1024];
+            byte[] buffer_new = new byte[1024];
+            int i = 0;
+            int n = 0;
+            bRun = true;
+            //接收线程
+            while (true) {
+                try {
+//                    while (is.available() == 0) {
+//                        while (bRun == false) {
+//                        }
+//                    }
+                    while (App.getApp().getIsInStre().available() == 0) {
+                        while (bRun == false) {
+                        }
+                    }
+                    while (true) {
+                        if (!bThread)//跳出循环
+                            return;
+//                        num = is.read(buffer);         //读入数据
+                        num = App.getApp().getIsInStre().read(buffer);
+                        n = 0;
+                        String s0 = new String(buffer, 0, num);
+                        fmsg += s0;    //保存收到数据
+                        for (i = 0; i < num; i++) {
+                            if ((buffer[i] == 0x0d) && (buffer[i + 1] == 0x0a)) {
+                                buffer_new[n] = 0x0a;
+                                i++;
+                            } else {
+                                buffer_new[n] = buffer[i];
+                            }
+                            n++;
+                        }
+                        String s = new String(buffer_new, 0, n);
+                        smsg += s;   //写入接收缓存
+//                        if (is.available() == 0) break;  //短时间没有数据才跳出进行显示
+                        if (App.getApp().getIsInStre().available() == 0) break;  //短时间没有数据才跳出进行显示
+                    }
+                    //发送显示消息，进行显示刷新
+                    handler.sendMessage(handler.obtainMessage());
+                } catch (IOException e) {
+                }
+            }
+        }
+    };
+
+    //消息处理队列
+    Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Log.e("this",""+smsg);
+        }
+    };
+
 
 
     @Override
@@ -120,6 +216,7 @@ public class HomeVideoFrag extends Fragment implements View.OnClickListener {
                 } else {
                     video_ab_im.setSelected(true);
                     IsabsSelected = true;
+                    onSendButtonClicked(Context.ADW);
                 }
                 IsbasSelected = false;
                 video_ba_im.setSelected(false);
@@ -142,6 +239,7 @@ public class HomeVideoFrag extends Fragment implements View.OnClickListener {
                 } else {
                     IsbasSelected = true;
                     video_ba_im.setSelected(true);
+                    onSendButtonClicked(Context.BDW);
                 }
                 IsabsSelected = false;
                 video_ab_im.setSelected(false);
@@ -166,4 +264,31 @@ public class HomeVideoFrag extends Fragment implements View.OnClickListener {
                 break;
         }
     }
+
+    public void onSendButtonClicked(String type) {
+        int i = 0;
+        int n = 0;
+        try {
+            OutputStream os = App.getApp().get_socket().getOutputStream();   //蓝牙连接输出流
+            byte[] bos = type.getBytes();
+            for (i = 0; i < bos.length; i++) {
+                if (bos[i] == 0x0a) n++;
+            }
+            byte[] bos_new = new byte[bos.length + n];
+            n = 0;
+            for (i = 0; i < bos.length; i++) { //手机中换行为0a,将其改为0d 0a后再发送
+                if (bos[i] == 0x0a) {
+                    bos_new[n] = 0x0d;
+                    n++;
+                    bos_new[n] = 0x0a;
+                } else {
+                    bos_new[n] = bos[i];
+                }
+                n++;
+            }
+            os.write(bos_new);
+        } catch (IOException e) {
+        }
+    }
+
 }
