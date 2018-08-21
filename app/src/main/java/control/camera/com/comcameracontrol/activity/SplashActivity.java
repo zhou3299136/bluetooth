@@ -13,7 +13,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -24,7 +23,7 @@ import control.camera.com.comcameracontrol.R;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private BluetoothAdapter _bluetooth = BluetoothAdapter.getDefaultAdapter();    //获取本地蓝牙适配器，即蓝牙设备
+    private BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();    //获取本地蓝牙适配器，即蓝牙设备
     BluetoothSocket _socket = null;      //蓝牙通信socket
     private final static int REQUEST_CONNECT_DEVICE = 1;    //宏定义查询设备句柄
     private InputStream is;    //输入流，用来接收蓝牙数据
@@ -51,7 +50,7 @@ public class SplashActivity extends AppCompatActivity {
         }
 
         //如果打开本地蓝牙设备不成功，提示信息，结束程序
-        if (_bluetooth == null) {
+        if (bluetooth == null) {
             Toast.makeText(this, "无法打开手机蓝牙，请确认手机是否有蓝牙功能！", Toast.LENGTH_LONG).show();
             finish();
             return;
@@ -60,8 +59,8 @@ public class SplashActivity extends AppCompatActivity {
         // 设置设备可以被搜索
         new Thread() {
             public void run() {
-                if (_bluetooth.isEnabled() == false) {
-                    _bluetooth.enable();
+                if (bluetooth.isEnabled() == false) {
+                    bluetooth.enable();
                 }
             }
         }.start();
@@ -79,7 +78,7 @@ public class SplashActivity extends AppCompatActivity {
 
     public void onConnectButtonClicked() {
 
-        if (_bluetooth.isEnabled() == false) {  //如果蓝牙服务不可用则提示
+        if (bluetooth.isEnabled() == false) {  //如果蓝牙服务不可用则提示
             Toast.makeText(this, " 打开蓝牙中...", Toast.LENGTH_LONG).show();
             return;
         }
@@ -113,7 +112,7 @@ public class SplashActivity extends AppCompatActivity {
                     // MAC地址，由DeviceListActivity设置返回
                     String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
                     // 得到蓝牙设备句柄
-                    _device = _bluetooth.getRemoteDevice(address);
+                    _device = bluetooth.getRemoteDevice(address);
 
                     // 用服务号得到socket
                     try{
