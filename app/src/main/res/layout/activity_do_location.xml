@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="请定位A点到B点滑动距离"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/do_location_A"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="A点定位"
+            />
+
+        <Button
+            android:id="@+id/do_location_B"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="B点定位"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <Button
+            android:id="@+id/do_location_A_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="A点定位完成"
+            />
+
+        <Button
+            android:id="@+id/do_location_B_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="B点定位完成"
+            />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/do_location_ok"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="定位完成"
+        />
+
+
+
+
+
+</LinearLayout>

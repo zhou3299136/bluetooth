@@ -2,9 +2,6 @@ package control.camera.com.comcameracontrol.activity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -14,26 +11,20 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.Toast;
-
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
-
 import control.camera.com.comcameracontrol.App;
 import control.camera.com.comcameracontrol.R;
 import control.camera.com.comcameracontrol.frag.HomeVideoFrag;
-import control.camera.com.comcameracontrol.utls.Context;
+import control.camera.com.comcameracontrol.utls.ContextUtil;
+import control.camera.com.comcameracontrol.utls.ReadThread;
+import control.camera.com.comcameracontrol.utls.ReadThreadMesg;
 
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends AppCompatActivity implements ReadThreadMesg{
 
-//    private BluetoothAdapter _bluetooth = BluetoothAdapter.getDefaultAdapter();    //获取本地蓝牙适配器，即蓝牙设备
-//    BluetoothSocket _socket = null;      //蓝牙通信socket
-//    BluetoothDevice _device = null;     //蓝牙设备
     private final static int REQUEST_CONNECT_DEVICE = 1;    //宏定义查询设备句柄
-//    private InputStream is;    //输入流，用来接收蓝牙数据
     boolean bRun = true;
     boolean bThread = false;
     private String smsg = "";    //显示用数据缓存
@@ -98,7 +89,6 @@ public class SplashActivity extends AppCompatActivity {
             try {
                 bRun = false;
                 Thread.sleep(2000);
-//                is.close();
                 App.getApp().getIsInStre().close();
                 App.getApp().get_socket().close();
                 App.getApp().set_socket(null);
@@ -119,13 +109,13 @@ public class SplashActivity extends AppCompatActivity {
                     // MAC地址，由DeviceListActivity设置返回
                     String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
                     // 得到蓝牙设备句柄
-                    Context.ADDRESS=address;
+                    ContextUtil.ADDRESS=address;
 //                    _device = _bluetooth.getRemoteDevice(address);
                     App.getApp().set_device(App.getApp().get_bluetooth().getRemoteDevice(address));
                     // 用服务号得到socket
                     try {
-//                        _socket = _device.createRfcommSocketToServiceRecord(UUID.fromString(Context.MY_UUID));
-                        App.getApp().set_socket(App.getApp().get_device().createRfcommSocketToServiceRecord(UUID.fromString(Context.MY_UUID)));
+//                        _socket = _device.createRfcommSocketToServiceRecord(UUID.fromString(ContextUtil.MY_UUID));
+                        App.getApp().set_socket(App.getApp().get_device().createRfcommSocketToServiceRecord(UUID.fromString(ContextUtil.MY_UUID)));
 
                     } catch (IOException e) {
                         Toast.makeText(this, "连接失败！", Toast.LENGTH_SHORT).show();
@@ -137,9 +127,10 @@ public class SplashActivity extends AppCompatActivity {
                         App.getApp().get_socket().connect();
 //                        Toast.makeText(this, "连接" + _device.getName() + "成功！", Toast.LENGTH_SHORT).show();
                         Toast.makeText(this, "连接" + App.getApp().get_device().getName() + "成功！", Toast.LENGTH_SHORT).show();
-//                        onSendButtonClicked(Context.handshake);
-                        startActivity(new Intent(SplashActivity.this,HomeVideoFrag.class));
-                        finish();
+                        onSendButtonClicked(ContextUtil.handshake);
+//                        App.getApp().onSendButtonClicked(ContextUtil.handshake);
+//                        startActivity(new Intent(SplashActivity.this,HomeVideoFrag.class));
+//                        finish();
                     } catch (IOException e) {
                         try {
                             Toast.makeText(this, "连接失败！", Toast.LENGTH_SHORT).show();
@@ -155,15 +146,16 @@ public class SplashActivity extends AppCompatActivity {
 
                     //打开接收线程
                     try {
-//                        is = _socket.getInputStream();   //得到蓝牙数据输入流
-//                        is=App.getApp().get_socket().getInputStream();
                         App.getApp().setIsInStre(App.getApp().get_socket().getInputStream());
                     } catch (IOException e) {
                         Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
                         return;
                     }
+
                     if (bThread == false) {
-//                        readThread.start();
+//                        App.getApp().getThread().setReadThreadMesg(this);
+//                        App.getApp().getThread().start();
+                        readThread.start();
                         bThread = true;
                     } else {
                         bRun = true;
@@ -189,10 +181,6 @@ public class SplashActivity extends AppCompatActivity {
             //接收线程
             while (true) {
                 try {
-//                    while (is.available() == 0) {
-//                        while (bRun == false) {
-//                        }
-//                    }
                     while (App.getApp().getIsInStre().available() == 0) {
                         while (bRun == false) {
                         }
@@ -215,8 +203,7 @@ public class SplashActivity extends AppCompatActivity {
                             n++;
                         }
                         String s = new String(buffer_new, 0, n);
-                        Log.e("SplashActivity", "" + s);
-                        smsg += s;   //写入接收缓存
+                        smsg = s;   //写入接收缓存
 //                        if (is.available() == 0) break;  //短时间没有数据才跳出进行显示
                         if (App.getApp().getIsInStre().available() == 0) break;  //短时间没有数据才跳出进行显示
                     }
@@ -232,8 +219,9 @@ public class SplashActivity extends AppCompatActivity {
     Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            Log.e("SplashActivity==",""+smsg);
             if (smsg.contains("WSOK")){
-                startActivity(new Intent(SplashActivity.this,HomeVideoFrag.class));
+                startActivity(new Intent(SplashActivity.this,DotLocationActivity.class));
                 finish();
             }
         }
@@ -274,4 +262,11 @@ public class SplashActivity extends AppCompatActivity {
 //            readThread.stop();
 //        }
     }
+
+    @Override
+    public void onMesg(String mesg) {
+        Log.e("this",""+mesg);
+    }
+
+
 }

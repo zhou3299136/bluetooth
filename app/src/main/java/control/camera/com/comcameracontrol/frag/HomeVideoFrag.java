@@ -1,34 +1,34 @@
 package control.camera.com.comcameracontrol.frag;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.IOException;
+import java.io.OutputStream;
+
+import control.camera.com.comcameracontrol.App;
+import control.camera.com.comcameracontrol.R;
+import control.camera.com.comcameracontrol.utls.ContextUtil;
+
 /**
  * 视频模式
  */
-import java.io.IOException;
-import java.io.OutputStream;
-import control.camera.com.comcameracontrol.App;
-import control.camera.com.comcameracontrol.R;
-import control.camera.com.comcameracontrol.utls.Context;
-
 public class HomeVideoFrag extends AppCompatActivity implements View.OnClickListener {
 
     private View MyView;
@@ -56,6 +56,9 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
     public LinearLayout video_course;
     public ImageView video_course_course;
 
+    public TextView main_frame_video;
+    public TextView main_frame_delay;
+
     public boolean IsabsSelected = false;
     public boolean IsStartSelected = false;
     public boolean IsbasSelected = false;
@@ -66,6 +69,9 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
     boolean bRun = true;
     boolean bThread = false;
     private String fmsg = "";    //保存用数据缓存
+    public boolean IsSpeed = false;
+    public String speed = "";
+    public boolean direction = false;
 
 //    public static HomeVideoFrag getInstance() {
 //        if (self == null) {
@@ -80,8 +86,7 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.frag_video);
         initView();
         InitData();
-        onSendButtonClicked(Context.handshake);
-//        onSendButtonClicked(Context.handshake);
+        onSendButtonClicked(ContextUtil.video);
     }
 
     //    @Nullable
@@ -96,9 +101,8 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
 ////        super.onViewCreated(view, savedInstanceState);
 ////        initView();
 ////        InitData();
-//////        onSendButtonClicked(Context.handshake);
+//////        onSendButtonClicked(ContextUtil.handshake);
 ////    }
-
 
 
     public void initView() {
@@ -106,7 +110,7 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
         frag_video_quantity_progress = findViewById(R.id.frag_video_quantity_progress);
 
         video_speed = findViewById(R.id.video_speed);
-        frag_video_quantity_speed =findViewById(R.id.frag_video_quantity_speed);
+        frag_video_quantity_speed = findViewById(R.id.frag_video_quantity_speed);
 
         video_ab = findViewById(R.id.video_ab);
         video_ab_im = findViewById(R.id.video_ab_im);
@@ -124,15 +128,19 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
         video_course = findViewById(R.id.video_course);
         video_course_course = findViewById(R.id.video_course_course);
 
+        main_frame_video=findViewById(R.id.main_frame_video);
+        main_frame_delay=findViewById(R.id.main_frame_delay);
+
         video_ab.setOnClickListener(this);
         video_start.setOnClickListener(this);
         video_ba.setOnClickListener(this);
         video_shutter.setOnClickListener(this);
         video_course.setOnClickListener(this);
-
+        main_frame_delay.setOnClickListener(this);
     }
 
     public void InitData() {
+        main_frame_video.setSelected(true);
 
         if (bThread == false) {
             readThread.start();
@@ -140,7 +148,35 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
         } else {
             bRun = true;
         }
+        frag_video_quantity_speed.setMax(100);
+        frag_video_quantity_speed.setProgress(50);
 
+        frag_video_quantity_progress.setMax(100);
+        frag_video_quantity_progress.setProgress(100);
+
+        video_speed.setFocusable(true);
+        video_speed.setFocusableInTouchMode(true);
+        video_speed.requestFocus();
+
+        video_speed.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                //判断是否是“完成”键
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    speed = v.getText().toString();
+                    IsSpeed = true;
+                    onSendButtonClicked(ContextUtil.speed + speed + "#");
+                    //隐藏软键盘
+                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm.isActive()) {
+                        imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
 
     }
 
@@ -184,7 +220,11 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
                             n++;
                         }
                         String s = new String(buffer_new, 0, n);
-                        smsg += s;   //写入接收缓存
+                        Log.e("HomeVideoFrag====", "" + s);
+                        if (s.contains("MSV")) {
+                            onSendButtonClicked(ContextUtil.speed + "50#");
+                        }
+                        smsg = s;   //写入接收缓存
 //                        if (is.available() == 0) break;  //短时间没有数据才跳出进行显示
                         if (App.getApp().getIsInStre().available() == 0) break;  //短时间没有数据才跳出进行显示
                     }
@@ -200,10 +240,9 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
     Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Log.e("this",""+smsg);
+            Log.e("HomeVideoFrag----", "" + smsg);
         }
     };
-
 
 
     @Override
@@ -216,20 +255,27 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
                 } else {
                     video_ab_im.setSelected(true);
                     IsabsSelected = true;
-                    onSendButtonClicked(Context.ADW);
+                    direction = true;
+                    onSendButtonClicked(ContextUtil.FXAB);
                 }
                 IsbasSelected = false;
                 video_ba_im.setSelected(false);
                 break;
             case R.id.video_start:
-                if (IsStartSelected) {
-                    IsStartSelected = false;
-                    video_start_im.setSelected(false);
-                    video_start_tv.setText("开始");
+                if (direction) {
+                    if (IsStartSelected) {
+                        IsStartSelected = false;
+                        video_start_im.setSelected(false);
+                        video_start_tv.setText("开始");
+                        onSendButtonClicked(ContextUtil.SPTZ);
+                    } else {
+                        IsStartSelected = true;
+                        video_start_im.setSelected(true);
+                        video_start_tv.setText("暂停");
+                        onSendButtonClicked(ContextUtil.SPQD);
+                    }
                 } else {
-                    IsStartSelected = true;
-                    video_start_im.setSelected(true);
-                    video_start_tv.setText("暂停");
+                    Toast.makeText(this, "请选择运动方向", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.video_ba:
@@ -239,7 +285,8 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
                 } else {
                     IsbasSelected = true;
                     video_ba_im.setSelected(true);
-                    onSendButtonClicked(Context.BDW);
+                    direction = true;
+                    onSendButtonClicked(ContextUtil.FXBA);
                 }
                 IsabsSelected = false;
                 video_ab_im.setSelected(false);
@@ -248,19 +295,32 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
                 if (IsShutterSelected) {
                     IsShutterSelected = false;
                     video_shutter_im.setSelected(false);
+                    onSendButtonClicked(ContextUtil.SPK0);
+                    Toast.makeText(this, "快门关闭", Toast.LENGTH_SHORT).show();
                 } else {
                     IsShutterSelected = true;
                     video_shutter_im.setSelected(true);
+                    onSendButtonClicked(ContextUtil.SPK1);
+                    Toast.makeText(this, "快门开启", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.video_course:
                 if (IsCourseSelected) {
                     IsCourseSelected = false;
                     video_course_course.setSelected(false);
+                    onSendButtonClicked(ContextUtil.SPSD);
+                    Toast.makeText(this, "自动返航关", Toast.LENGTH_SHORT).show();
                 } else {
                     IsCourseSelected = true;
                     video_course_course.setSelected(true);
+                    onSendButtonClicked(ContextUtil.SPZD);
+                    Toast.makeText(this, "自动返航开", Toast.LENGTH_SHORT).show();
                 }
+                break;
+
+            case R.id.main_frame_delay:
+                startActivity(new Intent(this,HomeDelayFrag.class));
+                finish();
                 break;
         }
     }

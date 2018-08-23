@@ -43,6 +43,13 @@
             android:screenOrientation="portrait"
             />
 
+        <activity android:name=".activity.DotLocationActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".frag.HomeDelayFrag"
+            android:screenOrientation="portrait"
+            />
+
     </application>
 
 </manifest>

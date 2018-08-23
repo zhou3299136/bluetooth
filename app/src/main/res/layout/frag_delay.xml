@@ -9,6 +9,36 @@
     android:orientation="vertical"
     tools:ignore="ResAuto">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="50dp"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:id="@+id/main_frame_video"
+            android:layout_width="120dp"
+            android:layout_height="37dp"
+            android:background="@drawable/shape_main_bg"
+            android:text="视频模式"
+            android:textColor="@color/main_bg_color"
+            android:gravity="center"
+            />
+
+        <TextView
+            android:id="@+id/main_frame_delay"
+            android:layout_width="120dp"
+            android:layout_height="37dp"
+            android:text="延时摄影"
+            android:gravity="center"
+            android:background="@drawable/shape_main_bg"
+            android:textColor="@color/main_bg_color"
+            />
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/frag_delay_quantity"
         android:layout_width="wrap_content"
