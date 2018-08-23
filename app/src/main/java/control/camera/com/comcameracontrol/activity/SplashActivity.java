@@ -220,7 +220,7 @@ public class SplashActivity extends AppCompatActivity implements ReadThreadMesg{
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             Log.e("SplashActivity==",""+smsg);
-            if (smsg.contains("WSOK")){
+            if (smsg.contains("SOK")){
                 startActivity(new Intent(SplashActivity.this,DotLocationActivity.class));
                 finish();
             }

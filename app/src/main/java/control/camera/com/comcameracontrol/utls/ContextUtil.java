@@ -35,7 +35,7 @@ public class ContextUtil {
     public static  String SYQD="$SYQD#";//视频启动
     public static  String SYTZ="$SYTZ#";//视频停止
     public static String SYBJ="$SYBJ#";//摄影步距值
-    public static  String SYJG="$SYJG#";//摄影间隔值
+    public static  String SYJG="$SYJG";//摄影间隔值
     public static  String SYZS="$SYZS#";//拍摄张数值
     public static  String SYKS="$SYKS#";//快门时间数值
 
