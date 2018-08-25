@@ -75,7 +75,6 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
     public boolean IsSpeed = false;
     public String speed = "";
     public boolean direction = false;
-    private InputStream HomeVideoio;    //输入流，用来接收蓝牙数据
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -124,12 +123,12 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
     public void InitData() {
         main_frame_video.setSelected(true);
         //打开接收线程
-        try {
-            HomeVideoio = App.getApp().get_socket().getInputStream();
-        } catch (IOException e) {
-            Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//        try {
+//            HomeVideoio = App.getApp().get_socket().getInputStream();
+//        } catch (IOException e) {
+//            Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
 
 
         frag_video_quantity_speed.setMax(100);
@@ -188,7 +187,6 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onStart() {
         super.onStart();
-
         readThread = new Thread() {
             public void run() {
                 if(this.isInterrupted()){
@@ -203,14 +201,14 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                 //接收线程
                 while (true) {
                     try {
-                        while (HomeVideoio.available() == 0) {
+                        while (App.getApp().getIsInStre().available() == 0) {
                             while (bRun == false) {
                             }
                         }
                         while (true) {
                             if (!bThread)//跳出循环
                                 return;
-                            num = HomeVideoio.read(buffer);         //读入数据
+                            num = App.getApp().getIsInStre().read(buffer);         //读入数据
                             n = 0;
                             String s0 = new String(buffer, 0, num);
                             fmsg += s0;    //保存收到数据
@@ -226,7 +224,7 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                             String s = new String(buffer_new, 0, n);
                             smsg = s;   //写入接收缓存
                             Log.e("HomeVideoFrag===", "" + smsg);
-                            if (HomeVideoio.available() == 0) break;  //短时间没有数据才跳出进行显示
+                            if (App.getApp().getIsInStre().available() == 0) break;  //短时间没有数据才跳出进行显示
                         }
                         //发送显示消息，进行显示刷新
                         handler.sendMessage(handler.obtainMessage());

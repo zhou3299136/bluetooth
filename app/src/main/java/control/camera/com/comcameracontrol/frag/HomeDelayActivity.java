@@ -68,7 +68,7 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
     public boolean IsbasSelected = false;
     public boolean direction = false;
 
-    private InputStream HomeDelayio;    //输入流，用来接收蓝牙数据
+//    private InputStream HomeDelayio;    //输入流，用来接收蓝牙数据
 
     public String delayTime="";
     public String delaynNum="";
@@ -134,12 +134,12 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
 
     public void initData() {
 
-        try {
-            HomeDelayio = App.getApp().get_socket().getInputStream();
-        } catch (IOException e) {
-            Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//        try {
+//            HomeDelayio = App.getApp().get_socket().getInputStream();
+//        } catch (IOException e) {
+//            Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
 
 
         frag_delay_distance_ed.setFocusable(true);
@@ -359,7 +359,7 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
                 //接收线程
                 while (true) {
                     try {
-                        while (HomeDelayio.available() == 0) {
+                        while (App.getApp().getIsInStre().available() == 0) {
                             while (bRun == false) {
                             }
                         }
@@ -370,7 +370,7 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
                         while (true) {
                             if (!bThread)//跳出循环
                                 return;
-                            num = HomeDelayio.read(buffer);         //读入数据
+                            num = App.getApp().getIsInStre().read(buffer);         //读入数据
 //                        num = App.getApp().getIsInStre().read(buffer);
                             n = 0;
                             String s0 = new String(buffer, 0, num);
@@ -387,7 +387,7 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
                             String s = new String(buffer_new, 0, n);
                             Log.e("HomeDelayFrag====", "" + s);
                             smsg = s;   //写入接收缓存
-                            if (HomeDelayio.available() == 0) break;  //短时间没有数据才跳出进行显示
+                            if (App.getApp().getIsInStre().available() == 0) break;  //短时间没有数据才跳出进行显示
 //                        if (App.getApp().getIsInStre().available() == 0) break;  //短时间没有数据才跳出进行显示
                         }
                         //发送显示消息，进行显示刷新

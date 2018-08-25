@@ -20,7 +20,7 @@ import control.camera.com.comcameracontrol.R;
 import control.camera.com.comcameracontrol.frag.HomeVideoActivity;
 import control.camera.com.comcameracontrol.utls.ContextUtil;
 
-public class DotLocationActivity extends Activity implements View.OnClickListener {
+public class DotLocationActivity extends Activity implements View.OnClickListener, App.SockeMsg {
     public TextView do_location_A;
     public TextView do_location_A_ok;
 
@@ -29,16 +29,11 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
 
     public TextView do_location_ok;
 
-    private String smsg = "";    //显示用数据缓存
-    boolean bRun = true;
-    boolean bThread = false;
-    private String fmsg = "";    //保存用数据缓存
 
     public boolean IsADW = false;
     public boolean IsADWOK = false;
     public boolean IsBDW = false;
     public boolean IsBDWOK = false;
-    private InputStream DotLocatio;    //输入流，用来接收蓝牙数据
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,15 +57,7 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
     }
 
     public void initData() {
-
-//        //打开接收线程
-        try {
-            DotLocatio = App.getApp().get_socket().getInputStream();
-        } catch (IOException e) {
-            Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
+        App.getApp().setMonMesgIstener(this);
     }
 
 
@@ -79,13 +66,13 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
         switch (view.getId()) {
             case R.id.do_location_A:
                 IsADW = true;
-                onSendButtonClicked(ContextUtil.ADW);
+                App.getApp().onSendButtonClicked(ContextUtil.ADW);
                 do_location_A.setSelected(true);
                 break;
             case R.id.do_location_A_ok:
                 if (IsADW) {
                     IsADWOK = true;
-                    onSendButtonClicked(ContextUtil.ADWOK);
+                    App.getApp().onSendButtonClicked(ContextUtil.ADWOK);
                     do_location_A_ok.setSelected(true);
                 } else {
                     Toast.makeText(this, "请先定位A点", Toast.LENGTH_SHORT).show();
@@ -94,7 +81,7 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
             case R.id.do_location_B:
                 if (IsADW && IsADWOK) {
                     IsBDW = true;
-                    onSendButtonClicked(ContextUtil.BDW);
+                    App.getApp().onSendButtonClicked(ContextUtil.BDW);
                     do_location_B.setSelected(true);
                 } else {
                     Toast.makeText(this, "请先定位A点", Toast.LENGTH_SHORT).show();
@@ -103,7 +90,7 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
             case R.id.do_location_B_ok:
                 if (IsBDW) {
                     IsBDWOK = true;
-                    onSendButtonClicked(ContextUtil.BDWOK);
+                    App.getApp().onSendButtonClicked(ContextUtil.BDWOK);
                     do_location_B_ok.setSelected(true);
                 } else {
                     Toast.makeText(this, "请先定位B点", Toast.LENGTH_SHORT).show();
@@ -120,116 +107,17 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
         }
     }
 
-    //接收数据线程
-    //接收数据线程
-    Thread readThread = null;
 
-    //消息处理队列
-    Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            Log.e("DotLocationActivity----", "" + smsg);
-        }
-    };
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        readThread = new Thread() {
-
-            public void run() {
-                if(this.isInterrupted()){
-                    return;
-                }
-                int num = 0;
-                byte[] buffer = new byte[1024];
-                byte[] buffer_new = new byte[1024];
-                int i = 0;
-                int n = 0;
-                bRun = true;
-                //接收线程
-                while (true) {
-                    try {
-                        while (DotLocatio.available() == 0) {
-                            while (bRun == false) {
-                            }
-                        }
-                        while (true) {
-                            if (!bThread)//跳出循环
-                                return;
-                            num = DotLocatio.read(buffer);
-                            n = 0;
-                            String s0 = new String(buffer, 0, num);
-                            fmsg += s0;    //保存收到数据
-                            for (i = 0; i < num; i++) {
-                                if ((buffer[i] == 0x0d) && (buffer[i + 1] == 0x0a)) {
-                                    buffer_new[n] = 0x0a;
-                                    i++;
-                                } else {
-                                    buffer_new[n] = buffer[i];
-                                }
-                                n++;
-                            }
-                            String s = new String(buffer_new, 0, n);
-                            Log.e("DotLocationActivity===", "" + s);
-                            smsg = s;   //写入接收缓存
-//                        if (is.available() == 0) break;  //短时间没有数据才跳出进行显示
-                            if (DotLocatio.available() == 0) break;  //短时间没有数据才跳出进行显示
-                        }
-                        //发送显示消息，进行显示刷新
-                        handler.sendMessage(handler.obtainMessage());
-                        if(this.isInterrupted()){
-                            return;
-                        }
-
-                    } catch (IOException e) {
-                    }
-                }
-            }
-        };
-        readThread.start();
-        bThread = true;
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        readThread.interrupt();
-        handler.removeCallbacks(readThread);
-    }
-
-    public void onSendButtonClicked(String type) {
-        int i = 0;
-        int n = 0;
-        try {
-            OutputStream os = App.getApp().get_socket().getOutputStream();   //蓝牙连接输出流
-            byte[] bos = type.getBytes();
-            for (i = 0; i < bos.length; i++) {
-                if (bos[i] == 0x0a) n++;
-            }
-            byte[] bos_new = new byte[bos.length + n];
-            n = 0;
-            for (i = 0; i < bos.length; i++) { //手机中换行为0a,将其改为0d 0a后再发送
-                if (bos[i] == 0x0a) {
-                    bos_new[n] = 0x0d;
-                    n++;
-                    bos_new[n] = 0x0a;
-                } else {
-                    bos_new[n] = bos[i];
-                }
-                n++;
-            }
-            os.write(bos_new);
-        } catch (IOException e) {
-        }
-    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        readThread.interrupt();
-        handler.removeCallbacks(readThread);
+        App.getApp().setMonMesgIstener(null);
     }
+
+    @Override
+    public void onMessAge(String message) {
+        Log.e("DotLocationActivity", "" + message);
+    }
+
 }
