@@ -147,12 +147,6 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
             return;
         }
 
-        if (bThread == false) {
-            readThread.start();
-            bThread = true;
-        } else {
-            bRun = true;
-        }
 
         frag_delay_distance_ed.setFocusable(true);
         frag_delay_distance_ed.setFocusableInTouchMode(true);
@@ -339,56 +333,7 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    Thread readThread = new Thread() {
-
-        public void run() {
-            int num = 0;
-            byte[] buffer = new byte[1024];
-            byte[] buffer_new = new byte[1024];
-            int i = 0;
-            int n = 0;
-            bRun = true;
-            //接收线程
-            while (true) {
-                try {
-                    while (HomeDelayio.available() == 0) {
-                        while (bRun == false) {
-                        }
-                    }
-//                    while (App.getApp().getIsInStre().available() == 0) {
-//                        while (bRun == false) {
-//                        }
-//                    }
-                    while (true) {
-                        if (!bThread)//跳出循环
-                            return;
-                        num = HomeDelayio.read(buffer);         //读入数据
-//                        num = App.getApp().getIsInStre().read(buffer);
-                        n = 0;
-                        String s0 = new String(buffer, 0, num);
-                        fmsg += s0;    //保存收到数据
-                        for (i = 0; i < num; i++) {
-                            if ((buffer[i] == 0x0d) && (buffer[i + 1] == 0x0a)) {
-                                buffer_new[n] = 0x0a;
-                                i++;
-                            } else {
-                                buffer_new[n] = buffer[i];
-                            }
-                            n++;
-                        }
-                        String s = new String(buffer_new, 0, n);
-                        Log.e("HomeDelayFrag====", "" + s);
-                        smsg = s;   //写入接收缓存
-                        if (HomeDelayio.available() == 0) break;  //短时间没有数据才跳出进行显示
-//                        if (App.getApp().getIsInStre().available() == 0) break;  //短时间没有数据才跳出进行显示
-                    }
-                    //发送显示消息，进行显示刷新
-                    handler.sendMessage(handler.obtainMessage());
-                } catch (IOException e) {
-                }
-            }
-        }
-    };
+    Thread readThread =null;
 
     //消息处理队列
     Handler handler = new Handler() {
@@ -402,6 +347,74 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
         }
     };
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        readThread = new Thread() {
+
+            public void run() {
+                int num = 0;
+                byte[] buffer = new byte[1024];
+                byte[] buffer_new = new byte[1024];
+                int i = 0;
+                int n = 0;
+                bRun = true;
+                //接收线程
+                while (true) {
+                    try {
+                        while (HomeDelayio.available() == 0) {
+                            while (bRun == false) {
+                            }
+                        }
+//                    while (App.getApp().getIsInStre().available() == 0) {
+//                        while (bRun == false) {
+//                        }
+//                    }
+                        while (true) {
+                            if (!bThread)//跳出循环
+                                return;
+                            num = HomeDelayio.read(buffer);         //读入数据
+//                        num = App.getApp().getIsInStre().read(buffer);
+                            n = 0;
+                            String s0 = new String(buffer, 0, num);
+                            fmsg += s0;    //保存收到数据
+                            for (i = 0; i < num; i++) {
+                                if ((buffer[i] == 0x0d) && (buffer[i + 1] == 0x0a)) {
+                                    buffer_new[n] = 0x0a;
+                                    i++;
+                                } else {
+                                    buffer_new[n] = buffer[i];
+                                }
+                                n++;
+                            }
+                            String s = new String(buffer_new, 0, n);
+                            Log.e("HomeDelayFrag====", "" + s);
+                            smsg = s;   //写入接收缓存
+                            if (HomeDelayio.available() == 0) break;  //短时间没有数据才跳出进行显示
+//                        if (App.getApp().getIsInStre().available() == 0) break;  //短时间没有数据才跳出进行显示
+                        }
+                        //发送显示消息，进行显示刷新
+                        handler.sendMessage(handler.obtainMessage());
+                    } catch (IOException e) {
+                    }
+                }
+            }
+        };
+
+        if (bThread == false) {
+            readThread.start();
+            bThread = true;
+        } else {
+            bRun = true;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        readThread.interrupt();
+        handler.removeCallbacks(readThread);
+    }
 
     public void onSendButtonClicked(String type) {
         int i = 0;

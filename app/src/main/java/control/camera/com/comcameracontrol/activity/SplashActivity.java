@@ -161,12 +161,12 @@ public class SplashActivity extends AppCompatActivity {
                         return;
                     }
 
-                    if (bThread == false) {
-                        readThread.start();
-                        bThread = true;
-                    } else {
-                        bRun = true;
-                    }
+//                    if (bThread == false) {
+//                        readThread.start();
+//                        bThread = true;
+//                    } else {
+//                        bRun = true;
+//                    }
                 }
                 break;
             default:
@@ -262,12 +262,16 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         readThread.interrupt();
         handler.removeCallbacks(readThread);
     }
 
-
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 }
