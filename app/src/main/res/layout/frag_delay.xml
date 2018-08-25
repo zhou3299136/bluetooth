@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@mipmap/backad_bg"
     android:orientation="vertical"
     tools:ignore="ResAuto">
 
@@ -14,6 +14,9 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_marginTop="50dp"
+        android:background="@drawable/shape_video_bg"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
         android:orientation="horizontal">
 
 
@@ -21,9 +24,8 @@
             android:id="@+id/main_frame_video"
             android:layout_width="120dp"
             android:layout_height="37dp"
-            android:background="@drawable/shape_main_bg"
             android:text="视频模式"
-            android:textColor="@color/main_bg_color"
+            android:textColor="#33ffffff"
             android:gravity="center"
             />
 
@@ -33,8 +35,7 @@
             android:layout_height="37dp"
             android:text="延时摄影"
             android:gravity="center"
-            android:background="@drawable/shape_main_bg"
-            android:textColor="@color/main_bg_color"
+            android:textColor="@color/white"
             />
 
     </LinearLayout>
@@ -44,10 +45,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="13dp"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="30dp"
         android:text="电量 100%"
         android:textColor="@color/white"
-        android:textSize="14sp" />
+        android:textSize="15sp" />
 
     <ProgressBar
         android:id="@+id/frag_delay_quantity_progress"
@@ -56,7 +57,7 @@
         android:layout_height="3dp"
         android:layout_marginLeft="13dp"
         android:layout_marginRight="13dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="15dp"
         android:progressDrawable="@drawable/progress_bar_layer_list" />
 
     <LinearLayout
@@ -64,7 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="13dp"
         android:layout_marginRight="13dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
         <TextView
@@ -73,7 +74,7 @@
             android:layout_weight="1"
             android:text="步距值"
             android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:textSize="15sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -84,12 +85,12 @@
 
         <EditText
             android:id="@+id/frag_delay_distance_ed"
-            android:layout_width="60dp"
-            android:layout_height="20dp"
+            android:layout_width="36dp"
+            android:layout_height="16dp"
             android:layout_marginLeft="5dp"
             android:background="@drawable/shape_ed_bg"
             android:paddingLeft="5dp"
-            android:text="0.02"
+            android:inputType="numberDecimal"
             android:textColor="@color/white"
             android:textSize="12sp" />
     </LinearLayout>
@@ -101,7 +102,7 @@
         android:layout_height="3dp"
         android:layout_marginLeft="13dp"
         android:layout_marginRight="13dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="15dp"
         android:progressDrawable="@drawable/progress_bar_layer_list" />
 
     <LinearLayout
@@ -109,7 +110,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="13dp"
         android:layout_marginRight="13dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="22dp"
         android:orientation="horizontal">
 
         <TextView
@@ -118,7 +119,7 @@
             android:layout_weight="1"
             android:text="间隔时间"
             android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:textSize="15sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -129,12 +130,12 @@
 
         <EditText
             android:id="@+id/frag_delay_time_ed"
-            android:layout_width="60dp"
-            android:layout_height="20dp"
+            android:layout_width="36dp"
+            android:layout_height="16dp"
             android:layout_marginLeft="5dp"
             android:background="@drawable/shape_ed_bg"
             android:paddingLeft="5dp"
-            android:text="1"
+            android:inputType="number"
             android:textColor="@color/white"
             android:textSize="12sp" />
     </LinearLayout>
@@ -144,7 +145,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="13dp"
         android:layout_marginRight="13dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
         <TextView
@@ -153,7 +154,7 @@
             android:layout_weight="1"
             android:text="拍摄张数"
             android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:textSize="15sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -164,12 +165,11 @@
 
         <EditText
             android:id="@+id/frag_delay_num_ed"
-            android:layout_width="60dp"
-            android:layout_height="20dp"
+            android:layout_width="32dp"
+            android:layout_height="16dp"
             android:layout_marginLeft="5dp"
             android:background="@drawable/shape_ed_bg"
-            android:paddingLeft="5dp"
-            android:text="20"
+            android:inputType="number"
             android:textColor="@color/white"
             android:textSize="12sp" />
     </LinearLayout>
@@ -178,22 +178,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="13dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="36dp"
         android:orientation="horizontal">
 
-        <control.camera.com.comcameracontrol.View.CompletedView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            tc:circleColor="@color/white"
-            tc:radius="50dip"
-            tc:ringBgColor="@color/white2"
-            tc:ringColor="@color/colorRed"
-            tc:strokeWidth="10dip" />
+        <control.camera.com.comcameracontrol.View.CirclePgBar
+            android:id="@+id/frag_delay_CirclePgBar"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+          />
+        
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="30dp"
+            android:layout_marginLeft="22dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -206,38 +204,17 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:text="完成张数："
+                    android:textSize="15sp"
                     />
 
                 <TextView
+                    android:id="@+id/frag_delay_complete_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
-                    android:textSize="13sp"
-                    android:text="09"
-                    android:layout_marginLeft="50dp"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:text="完成时间约："
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="13sp"
-                    android:text="09"
-                    android:layout_marginLeft="50dp"
+                    android:textSize="15sp"
+                    android:text="00"
+                    android:layout_marginLeft="22dp"
                     />
 
             </LinearLayout>
@@ -264,14 +241,15 @@
 
             <ImageView
                 android:id="@+id/delay_ab_im"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
                 android:src="@drawable/shape_video_ab" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="A-B"
+                android:layout_marginTop="10dp"
                 android:textColor="@color/white"
                 android:textSize="13sp" />
 
@@ -287,8 +265,8 @@
 
             <ImageView
                 android:id="@+id/delay_start_im"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:src="@drawable/shape_video_start" />
 
             <TextView
@@ -296,6 +274,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="开始"
+                android:layout_marginTop="10dp"
                 android:textColor="@color/white"
                 android:textSize="13sp" />
 
@@ -311,14 +290,15 @@
 
             <ImageView
                 android:id="@+id/delay_ba_im"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
                 android:src="@drawable/shape_video_ba" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="B-A"
+                android:layout_marginTop="10dp"
                 android:textColor="@color/white"
                 android:textSize="13sp" />
 
@@ -331,15 +311,16 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="13dp"
         android:layout_marginRight="13dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="22dp"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="按下快门时间"
+            android:layout_weight="1"
             android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:textSize="15sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -350,12 +331,13 @@
 
         <EditText
             android:id="@+id/delay_shutter_time"
-            android:layout_width="60dp"
-            android:layout_height="20dp"
+            android:layout_width="32dp"
+            android:layout_height="16dp"
             android:layout_marginLeft="5dp"
+            android:layout_marginRight="13dp"
             android:background="@drawable/shape_ed_bg"
             android:paddingLeft="5dp"
-            android:text="0.02"
+            android:inputType="numberDecimal"
             android:textColor="@color/white"
             android:textSize="12sp" />
     </LinearLayout>

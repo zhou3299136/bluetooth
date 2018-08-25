@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@mipmap/backad_bg"
     android:orientation="vertical">
 
     <LinearLayout
@@ -10,6 +10,9 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_marginTop="50dp"
+        android:background="@drawable/shape_video_bg"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
         android:orientation="horizontal">
 
 
@@ -17,9 +20,8 @@
             android:id="@+id/main_frame_video"
             android:layout_width="120dp"
             android:layout_height="37dp"
-            android:background="@drawable/shape_main_bg"
             android:text="视频模式"
-            android:textColor="@color/main_bg_color"
+            android:textColor="@color/white"
             android:gravity="center"
             />
 
@@ -29,8 +31,7 @@
             android:layout_height="37dp"
             android:text="延时摄影"
             android:gravity="center"
-            android:background="@drawable/shape_main_bg"
-            android:textColor="@color/main_bg_color"
+            android:textColor="#33ffffff"
             />
 
     </LinearLayout>
@@ -40,10 +41,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="13dp"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="30dp"
         android:text="电量 100%"
         android:textColor="@color/white"
-        android:textSize="14sp" />
+        android:textSize="15sp" />
 
     <ProgressBar
         android:id="@+id/frag_video_quantity_progress"
@@ -52,14 +53,14 @@
         android:layout_height="3dp"
         android:layout_marginLeft="13dp"
         android:layout_marginRight="13dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="15dp"
         android:progressDrawable="@drawable/progress_bar_layer_list" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="13dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -68,12 +69,12 @@
             android:layout_height="wrap_content"
             android:text="速度"
             android:textColor="@color/white"
-            android:textSize="14sp" />
+            android:textSize="15sp" />
 
         <EditText
             android:id="@+id/video_speed"
-            android:layout_width="70dp"
-            android:layout_height="20dp"
+            android:layout_width="36dp"
+            android:layout_height="16dp"
             android:text="50"
             android:textColor="@color/white"
             android:layout_marginLeft="5dp"
@@ -85,7 +86,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="(0-100%)"
+            android:text="0-100"
             android:layout_marginLeft="5dp"
             android:textColor="@color/white"
             android:textSize="12sp" />
@@ -105,7 +106,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="45dp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -119,8 +120,8 @@
 
             <ImageView
                 android:id="@+id/video_ab_im"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
                 android:src="@drawable/shape_video_ab" />
 
             <TextView
@@ -128,6 +129,7 @@
                 android:layout_height="wrap_content"
                 android:text="A-B"
                 android:textColor="@color/white"
+                android:layout_marginTop="10dp"
                 android:textSize="13sp" />
 
         </LinearLayout>
@@ -142,8 +144,8 @@
 
             <ImageView
                 android:id="@+id/video_start_im"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="67dp"
+                android:layout_height="67dp"
                 android:src="@drawable/shape_video_start" />
 
             <TextView
@@ -152,6 +154,7 @@
                 android:layout_height="wrap_content"
                 android:text="开始"
                 android:textColor="@color/white"
+                android:layout_marginTop="10dp"
                 android:textSize="13sp" />
 
         </LinearLayout>
@@ -166,8 +169,8 @@
 
             <ImageView
                 android:id="@+id/video_ba_im"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
                 android:src="@drawable/shape_video_ba" />
 
             <TextView
@@ -175,6 +178,7 @@
                 android:layout_height="wrap_content"
                 android:text="B-A"
                 android:textColor="@color/white"
+                android:layout_marginTop="10dp"
                 android:textSize="13sp" />
 
         </LinearLayout>
@@ -198,15 +202,15 @@
 
             <ImageView
                 android:id="@+id/video_shutter_im"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:src="@drawable/shape_video_shutter" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="快门"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="10dp"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -221,8 +225,8 @@
 
             <ImageView
                 android:id="@+id/video_course_course"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:src="@drawable/shape_video_course" />
 
             <TextView
@@ -230,6 +234,7 @@
                 android:layout_height="wrap_content"
                 android:text="自动往返"
                 android:textColor="@color/white"
+                android:layout_marginTop="10dp"
                 android:textSize="12sp" />
         </LinearLayout>
 

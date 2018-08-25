@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -20,10 +21,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import control.camera.com.comcameracontrol.App;
 import control.camera.com.comcameracontrol.R;
+import control.camera.com.comcameracontrol.utls.AppUtis;
 import control.camera.com.comcameracontrol.utls.ContextUtil;
 
 /**
@@ -72,13 +75,7 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
     public boolean IsSpeed = false;
     public String speed = "";
     public boolean direction = false;
-
-//    public static HomeVideoFrag getInstance() {
-//        if (self == null) {
-//            self = new HomeVideoFrag();
-//        }
-//        return self;
-//    }
+    private InputStream HomeVideoio;    //输入流，用来接收蓝牙数据
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,21 +85,6 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
         InitData();
         onSendButtonClicked(ContextUtil.video);
     }
-
-    //    @Nullable
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-//        MyView = inflater.inflate(R.layout.frag_video, container, false);
-//        return MyView;
-//    }
-
-//    @Override
-////    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-////        super.onViewCreated(view, savedInstanceState);
-////        initView();
-////        InitData();
-//////        onSendButtonClicked(ContextUtil.handshake);
-////    }
 
 
     public void initView() {
@@ -128,8 +110,8 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
         video_course = findViewById(R.id.video_course);
         video_course_course = findViewById(R.id.video_course_course);
 
-        main_frame_video=findViewById(R.id.main_frame_video);
-        main_frame_delay=findViewById(R.id.main_frame_delay);
+        main_frame_video = findViewById(R.id.main_frame_video);
+        main_frame_delay = findViewById(R.id.main_frame_delay);
 
         video_ab.setOnClickListener(this);
         video_start.setOnClickListener(this);
@@ -141,6 +123,14 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
 
     public void InitData() {
         main_frame_video.setSelected(true);
+        //打开接收线程
+        try {
+            HomeVideoio = App.getApp().get_socket().getInputStream();
+        } catch (IOException e) {
+            Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
 
         if (bThread == false) {
             readThread.start();
@@ -165,12 +155,21 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
                 //判断是否是“完成”键
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     speed = v.getText().toString();
-                    IsSpeed = true;
-                    onSendButtonClicked(ContextUtil.speed + speed + "#");
-                    //隐藏软键盘
-                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (imm.isActive()) {
-                        imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+                    if (TextUtils.isEmpty(speed)) {
+                        Toast.makeText(HomeVideoFrag.this, "速度不能为空", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if (Integer.valueOf(speed) > 100) {
+                            Toast.makeText(HomeVideoFrag.this, "最大速度为100，请重新输入", Toast.LENGTH_SHORT).show();
+                        } else {
+                            IsSpeed = true;
+                            onSendButtonClicked(ContextUtil.speed + AppUtis.speedTime(speed) + "#");
+                            frag_video_quantity_speed.setProgress(Integer.valueOf(speed));
+                            //隐藏软键盘
+                            InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            if (imm.isActive()) {
+                                imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+                            }
+                        }
                     }
                     return true;
                 }
@@ -194,19 +193,19 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
             //接收线程
             while (true) {
                 try {
-//                    while (is.available() == 0) {
-//                        while (bRun == false) {
-//                        }
-//                    }
-                    while (App.getApp().getIsInStre().available() == 0) {
+                    while (HomeVideoio.available() == 0) {
                         while (bRun == false) {
                         }
                     }
+//                    while (App.getApp().getIsInStre().available() == 0) {
+//                        while (bRun == false) {
+//                        }
+//                    }
                     while (true) {
                         if (!bThread)//跳出循环
                             return;
-//                        num = is.read(buffer);         //读入数据
-                        num = App.getApp().getIsInStre().read(buffer);
+                        num = HomeVideoio.read(buffer);         //读入数据
+//                        num = App.getApp().getIsInStre().read(buffer);
                         n = 0;
                         String s0 = new String(buffer, 0, num);
                         fmsg += s0;    //保存收到数据
@@ -220,13 +219,9 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
                             n++;
                         }
                         String s = new String(buffer_new, 0, n);
-                        Log.e("HomeVideoFrag====", "" + s);
-                        if (s.contains("MSV")) {
-                            onSendButtonClicked(ContextUtil.speed + "50#");
-                        }
                         smsg = s;   //写入接收缓存
-//                        if (is.available() == 0) break;  //短时间没有数据才跳出进行显示
-                        if (App.getApp().getIsInStre().available() == 0) break;  //短时间没有数据才跳出进行显示
+                        if (HomeVideoio.available() == 0) break;  //短时间没有数据才跳出进行显示
+//                        if (App.getApp().getIsInStre().available() == 0) break;  //短时间没有数据才跳出进行显示
                     }
                     //发送显示消息，进行显示刷新
                     handler.sendMessage(handler.obtainMessage());
@@ -244,6 +239,11 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
         }
     };
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        onSendButtonClicked(ContextUtil.speed + "050#");
+    }
 
     @Override
     public void onClick(View v) {
@@ -319,7 +319,7 @@ public class HomeVideoFrag extends AppCompatActivity implements View.OnClickList
                 break;
 
             case R.id.main_frame_delay:
-                startActivity(new Intent(this,HomeDelayFrag.class));
+                startActivity(new Intent(this, HomeDelayFrag.class));
                 finish();
                 break;
         }

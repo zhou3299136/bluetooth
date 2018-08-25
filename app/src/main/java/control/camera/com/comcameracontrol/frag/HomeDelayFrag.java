@@ -9,24 +9,31 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import control.camera.com.comcameracontrol.App;
 import control.camera.com.comcameracontrol.R;
+import control.camera.com.comcameracontrol.View.CirclePgBar;
+import control.camera.com.comcameracontrol.utls.AppUtis;
 import control.camera.com.comcameracontrol.utls.ContextUtil;
 
 /**
@@ -42,7 +49,7 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
     public TextView main_frame_video;
 
     public EditText frag_delay_time_ed;//间隔时间
-    public EditText frag_delay_num_ed;//拍摄长输
+    public EditText frag_delay_num_ed;//拍摄数量
 
     public LinearLayout delay_ab;
     public ImageView delay_ab_im;
@@ -55,16 +62,33 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
     public LinearLayout delay_ba;
     public ImageView delay_ba_im;
 
-    public EditText delay_shutter_time;
+    public EditText delay_shutter_time;//快门时间
+    public EditText frag_delay_distance_ed;
 
+    public ProgressBar frag_delay_quantity_progress;
+    public ProgressBar frag_delay_distance_progress;
+
+    public TextView frag_delay_complete_num;
     public boolean IsabsSelected = false;
     public boolean IsStartSelected = false;
     public boolean IsbasSelected = false;
-    public boolean IsShutterSelected = false;
-    public boolean IsCourseSelected = false;
     public boolean direction = false;
 
+    private InputStream HomeDelayio;    //输入流，用来接收蓝牙数据
+
     public String delayTime="";
+    public String delaynNum="";
+    public String distance="";
+    public String shutterTime="";
+
+    public boolean isDelayTime=false;
+    public boolean isDelaynNum=false;
+    public boolean isDistance=false;
+    public boolean isShutterTime=false;
+
+    public int amount=0;
+    public int completion=0;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,6 +96,7 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.frag_delay);
         initView();
         initData();
+        onSendButtonClicked(ContextUtil.MSP);
     }
 
 
@@ -95,29 +120,123 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
         delay_ba_im = findViewById(R.id.delay_ba_im);
 
         delay_shutter_time = findViewById(R.id.delay_shutter_time);
+        frag_delay_quantity_progress=findViewById(R.id.frag_delay_quantity_progress);
+        frag_delay_distance_progress=findViewById(R.id.frag_delay_distance_progress);
+        frag_delay_distance_ed=findViewById(R.id.frag_delay_distance_ed);
+
+        frag_delay_complete_num=findViewById(R.id.frag_delay_complete_num);
+
 
         delay_ab.setOnClickListener(this);
         delay_start.setOnClickListener(this);
         delay_ba.setOnClickListener(this);
 
 
+        frag_delay_quantity_progress.setMax(100);
+        frag_delay_quantity_progress.setProgress(100);
+        frag_delay_distance_progress.setMax(100);
     }
 
 
     public void initData() {
 
+        try {
+            HomeDelayio = App.getApp().get_socket().getInputStream();
+        } catch (IOException e) {
+            Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (bThread == false) {
+            readThread.start();
+            bThread = true;
+        } else {
+            bRun = true;
+        }
+
+        frag_delay_distance_ed.setFocusable(true);
+        frag_delay_distance_ed.setFocusableInTouchMode(true);
+        frag_delay_distance_ed.requestFocus();
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
+        /**
+         * 步距离
+         */
+        frag_delay_distance_ed.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                //判断是否是“完成”键
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                    distance = v.getText().toString();
+                    if (TextUtils.isEmpty(distance)){
+                        Toast.makeText(HomeDelayFrag.this, "步距离不能为空", Toast.LENGTH_SHORT).show();
+                    }else {
+
+//                        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        if (imm.isActive()) {
+//                            imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+//                        }
+                        isDistance=true;
+                        onSendButtonClicked(ContextUtil.SYBJ + distance + "#");
+                        frag_delay_time_ed.requestFocus();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        /**
+         * 间隔时间
+         */
         frag_delay_time_ed.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 //判断是否是“完成”键
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
                     delayTime = v.getText().toString();
-                    onSendButtonClicked(ContextUtil.SYJG + delayTime + "#");
-                    //隐藏软键盘
-                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (imm.isActive()) {
-                        imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+                    if (TextUtils.isEmpty(delayTime)){
+                        Toast.makeText(HomeDelayFrag.this, "间隔时间不能为空", Toast.LENGTH_SHORT).show();
+                    }else {
+                        isDelayTime=true;
+                        onSendButtonClicked(ContextUtil.SYJG + AppUtis.speedTime(delayTime) + "#");
+                        //隐藏软键盘
+//                        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        if (imm.isActive()) {
+//                            imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+//                        }
+                        frag_delay_num_ed.requestFocus();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        /**
+         * 拍摄数量
+         */
+        frag_delay_num_ed.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                //判断是否是“完成”键
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                    delaynNum = v.getText().toString();
+                    if (TextUtils.isEmpty(delaynNum)){
+                        Toast.makeText(HomeDelayFrag.this, "拍摄数量不能为空", Toast.LENGTH_SHORT).show();
+                    }else {
+                        isDelaynNum=true;
+                        amount=Integer.valueOf(delaynNum);
+                        onSendButtonClicked(ContextUtil.SYZS + AppUtis.SykDelaynNum(delaynNum) + "#");
+                        //隐藏软键盘
+//                        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        if (imm.isActive()) {
+//                            imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+//                        }
+                        delay_shutter_time.requestFocus();
                     }
                     return true;
                 }
@@ -126,6 +245,33 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
         });
 
 
+        /**
+         * 快门时间
+         */
+        delay_shutter_time.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                //判断是否是“完成”键
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+
+                    shutterTime = v.getText().toString();
+                    if (TextUtils.isEmpty(shutterTime)){
+                        Toast.makeText(HomeDelayFrag.this, "快门时间不能为空", Toast.LENGTH_SHORT).show();
+                    }else {
+                        isShutterTime=true;
+                        onSendButtonClicked(ContextUtil.SYKS + AppUtis.shutterTime(shutterTime) + "#");
+                        //隐藏软键盘
+                        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (imm.isActive()) {
+                            imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
     }
 
@@ -151,22 +297,30 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
                 delay_ba_im.setSelected(false);
                 break;
             case R.id.delay_start:
-                if (direction) {
+
+                if (!direction) {
+                        Toast.makeText(this, "请选择运动方向", Toast.LENGTH_SHORT).show();
+                }else if (!isDistance){
+                    Toast.makeText(this, "请输入步距值", Toast.LENGTH_SHORT).show();
+                }else if (!isDelayTime){
+                    Toast.makeText(this, "请输入间隔时间", Toast.LENGTH_SHORT).show();
+                }else if (!isDelaynNum){
+                    Toast.makeText(this, "请输入拍摄张数", Toast.LENGTH_SHORT).show();
+                }else if (!isShutterTime){
+                    Toast.makeText(this, "请输入按下快门时间", Toast.LENGTH_SHORT).show();
+                }else {
                     if (IsStartSelected) {
                         IsStartSelected = false;
                         delay_start_im.setSelected(false);
                         delay_start_tv.setText("开始");
-                        onSendButtonClicked(ContextUtil.SYQD);
+                        onSendButtonClicked(ContextUtil.SYTZ);
                     } else {
                         IsStartSelected = true;
                         delay_start_im.setSelected(true);
                         delay_start_tv.setText("暂停");
-                        onSendButtonClicked(ContextUtil.SYTZ);
+                        onSendButtonClicked(ContextUtil.SYQD);
                     }
-                } else {
-                    Toast.makeText(this, "请选择运动方向", Toast.LENGTH_SHORT).show();
                 }
-
                 break;
             case R.id.delay_ba:
                 if (IsbasSelected) {
@@ -197,19 +351,19 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
             //接收线程
             while (true) {
                 try {
-//                    while (is.available() == 0) {
-//                        while (bRun == false) {
-//                        }
-//                    }
-                    while (App.getApp().getIsInStre().available() == 0) {
+                    while (HomeDelayio.available() == 0) {
                         while (bRun == false) {
                         }
                     }
+//                    while (App.getApp().getIsInStre().available() == 0) {
+//                        while (bRun == false) {
+//                        }
+//                    }
                     while (true) {
                         if (!bThread)//跳出循环
                             return;
-//                        num = is.read(buffer);         //读入数据
-                        num = App.getApp().getIsInStre().read(buffer);
+                        num = HomeDelayio.read(buffer);         //读入数据
+//                        num = App.getApp().getIsInStre().read(buffer);
                         n = 0;
                         String s0 = new String(buffer, 0, num);
                         fmsg += s0;    //保存收到数据
@@ -224,12 +378,9 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
                         }
                         String s = new String(buffer_new, 0, n);
                         Log.e("HomeDelayFrag====", "" + s);
-                        if (s.contains("MSV")) {
-                            onSendButtonClicked(ContextUtil.speed + "50#");
-                        }
                         smsg = s;   //写入接收缓存
-//                        if (is.available() == 0) break;  //短时间没有数据才跳出进行显示
-                        if (App.getApp().getIsInStre().available() == 0) break;  //短时间没有数据才跳出进行显示
+                        if (HomeDelayio.available() == 0) break;  //短时间没有数据才跳出进行显示
+//                        if (App.getApp().getIsInStre().available() == 0) break;  //短时间没有数据才跳出进行显示
                     }
                     //发送显示消息，进行显示刷新
                     handler.sendMessage(handler.obtainMessage());
@@ -244,6 +395,10 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             Log.e("HomeDelayFrag----", "" + smsg);
+            if (smsg.contains("SYWC")){
+                String smsp=smsg.substring(5,smsg.length());
+                frag_delay_complete_num.setText(""+smsp);
+            }
         }
     };
 

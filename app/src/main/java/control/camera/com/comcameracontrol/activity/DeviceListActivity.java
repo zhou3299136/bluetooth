@@ -30,22 +30,32 @@ public class DeviceListActivity extends Activity{
     private BluetoothAdapter mBtAdapter;
     private ArrayAdapter<String> mPairedDevicesArrayAdapter;
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
-
-
+    private TextView title_new_title;
+    private TextView button_cancel;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);  //设置窗口显示模式为窗口方式
+
         // 设定默认返回值为取消
         setContentView(R.layout.device_list);
+        setProgressBarIndeterminateVisibility(false);
         setResult(Activity.RESULT_CANCELED);
         initData();
     }
 
     public void initData(){
+        title_new_title=findViewById(R.id.title_new_title);
+        button_cancel=findViewById(R.id.button_cancel);
+        button_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         // 设定扫描按键响应
-        Button scanButton = (Button) findViewById(R.id.button_scan);
+        TextView scanButton = (TextView) findViewById(R.id.button_scan);
         scanButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 doDiscovery();
@@ -103,9 +113,10 @@ public class DeviceListActivity extends Activity{
         if (D) Log.d(TAG, "doDiscovery()");
 
         // 在窗口显示查找中信息
-        setProgressBarIndeterminateVisibility(true);
-        setTitle("查找设备中...");
+//        setProgressBarIndeterminateVisibility(true);
+//        setTitle("查找设备中...");
 
+        title_new_title.setText("查找设备中...");
         // 显示其它设备（未配对设备）列表
         findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
 
@@ -157,8 +168,9 @@ public class DeviceListActivity extends Activity{
                 Log.e(TAG,device.getName() + "---" + device.getAddress());
                 // 搜索完成action
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                setProgressBarIndeterminateVisibility(false);
-                setTitle("选择要连接的设备");
+//                setProgressBarIndeterminateVisibility(false);
+//                setTitle("选择要连接的设备");
+                title_new_title.setText("选择要连接的设备");
                 if (mNewDevicesArrayAdapter.getCount() == 0) {
                     String noDevices = "没有找到新设备";
                     mNewDevicesArrayAdapter.add(noDevices);

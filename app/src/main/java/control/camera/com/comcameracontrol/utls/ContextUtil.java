@@ -32,12 +32,12 @@ public class ContextUtil {
      * 延时拍摄
      */
     public static  String MSP="$MSP#";//延时摄影模式
-    public static  String SYQD="$SYQD#";//视频启动
-    public static  String SYTZ="$SYTZ#";//视频停止
-    public static String SYBJ="$SYBJ#";//摄影步距值
+    public static  String SYQD="$SYQD#";//拍摄启动
+    public static  String SYTZ="$SYTZ#";//拍摄停止
+    public static String SYBJ="$SYBJ";//摄影步距值
     public static  String SYJG="$SYJG";//摄影间隔值
-    public static  String SYZS="$SYZS#";//拍摄张数值
-    public static  String SYKS="$SYKS#";//快门时间数值
+    public static  String SYZS="$SYZS";//拍摄张数值
+    public static  String SYKS="$SYKS";//快门时间数值
 
     public static String ADDRESS="";
     public final static String MY_UUID = "00001101-0000-1000-8000-00805F9B34FB";   //SPP服务UUID号

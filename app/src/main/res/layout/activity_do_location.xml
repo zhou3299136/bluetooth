@@ -2,60 +2,92 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@mipmap/backad_bg"
+    android:gravity="center"
     android:orientation="vertical">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="18sp"
         android:text="请定位A点到B点滑动距离"
         />
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="31dp"
+        android:layout_marginTop="75dp"
+        android:gravity="center"
         android:orientation="horizontal">
 
-        <Button
+        <TextView
             android:id="@+id/do_location_A"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="105dp"
+            android:layout_height="match_parent"
+            android:textSize="13sp"
+            android:gravity="center"
             android:text="A点定位"
+            android:background="@drawable/shape_main_bg"
+            android:textColor="@color/shape_do_location_color"
             />
 
-        <Button
-            android:id="@+id/do_location_B"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="B点定位"
+        <TextView
+            android:id="@+id/do_location_A_ok"
+            android:layout_width="105dp"
+            android:layout_height="match_parent"
+            android:text="A点定位完成"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/shape_main_bg"
+            android:textColor="@color/shape_do_location_color"
             />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="31dp"
         android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="15dp"
         >
-        <Button
-            android:id="@+id/do_location_A_ok"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="A点定位完成"
+        <TextView
+            android:id="@+id/do_location_B"
+            android:layout_width="105dp"
+            android:layout_height="match_parent"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:text="B点定位"
+            android:background="@drawable/shape_main_bg"
+            android:textColor="@color/shape_do_location_color"
             />
 
-        <Button
+        <TextView
             android:id="@+id/do_location_B_ok"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="105dp"
+            android:layout_height="match_parent"
             android:text="B点定位完成"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/shape_main_bg"
+            android:textColor="@color/shape_do_location_color"
             />
 
     </LinearLayout>
 
-    <Button
+    <TextView
         android:id="@+id/do_location_ok"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="230dp"
+        android:layout_height="31dp"
         android:text="定位完成"
+        android:textColor="@color/white"
+        android:textSize="13sp"
+        android:gravity="center"
+        android:background="@drawable/shape_main_bg_false"
+        android:layout_marginTop="75dp"
         />
 
 

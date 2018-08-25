@@ -11,25 +11,28 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
+
 import control.camera.com.comcameracontrol.App;
 import control.camera.com.comcameracontrol.R;
-import control.camera.com.comcameracontrol.frag.HomeVideoFrag;
 import control.camera.com.comcameracontrol.utls.ContextUtil;
-import control.camera.com.comcameracontrol.utls.ReadThread;
-import control.camera.com.comcameracontrol.utls.ReadThreadMesg;
 
-public class SplashActivity extends AppCompatActivity implements ReadThreadMesg{
+public class SplashActivity extends AppCompatActivity {
 
     private final static int REQUEST_CONNECT_DEVICE = 1;    //宏定义查询设备句柄
     boolean bRun = true;
     boolean bThread = false;
     private String smsg = "";    //显示用数据缓存
     private String fmsg = "";    //保存用数据缓存
-
+    private TextView connecting_device;
+    private InputStream SplashisInStre;    //输入流，用来接收蓝牙数据
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,15 +66,20 @@ public class SplashActivity extends AppCompatActivity implements ReadThreadMesg{
             }
         }.start();
 
+        initData();
         onConnectButtonClicked();
 
-        initData();
     }
 
 
     public void initData() {
-
-
+        connecting_device = findViewById(R.id.connecting_device);
+        connecting_device.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onConnectButtonClicked();
+            }
+        });
     }
 
     public void onConnectButtonClicked() {
@@ -89,7 +97,7 @@ public class SplashActivity extends AppCompatActivity implements ReadThreadMesg{
             try {
                 bRun = false;
                 Thread.sleep(2000);
-                App.getApp().getIsInStre().close();
+                SplashisInStre.close();
                 App.getApp().get_socket().close();
                 App.getApp().set_socket(null);
             } catch (IOException e) {
@@ -109,7 +117,7 @@ public class SplashActivity extends AppCompatActivity implements ReadThreadMesg{
                     // MAC地址，由DeviceListActivity设置返回
                     String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
                     // 得到蓝牙设备句柄
-                    ContextUtil.ADDRESS=address;
+                    ContextUtil.ADDRESS = address;
 //                    _device = _bluetooth.getRemoteDevice(address);
                     App.getApp().set_device(App.getApp().get_bluetooth().getRemoteDevice(address));
                     // 用服务号得到socket
@@ -146,15 +154,14 @@ public class SplashActivity extends AppCompatActivity implements ReadThreadMesg{
 
                     //打开接收线程
                     try {
-                        App.getApp().setIsInStre(App.getApp().get_socket().getInputStream());
+//                        App.getApp().setIsInStre(App.getApp().get_socket().getInputStream());
+                        SplashisInStre = App.getApp().get_socket().getInputStream();
                     } catch (IOException e) {
                         Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     if (bThread == false) {
-//                        App.getApp().getThread().setReadThreadMesg(this);
-//                        App.getApp().getThread().start();
                         readThread.start();
                         bThread = true;
                     } else {
@@ -181,7 +188,7 @@ public class SplashActivity extends AppCompatActivity implements ReadThreadMesg{
             //接收线程
             while (true) {
                 try {
-                    while (App.getApp().getIsInStre().available() == 0) {
+                    while (SplashisInStre.available() == 0) {
                         while (bRun == false) {
                         }
                     }
@@ -189,7 +196,7 @@ public class SplashActivity extends AppCompatActivity implements ReadThreadMesg{
                         if (!bThread)//跳出循环
                             return;
 //                        num = is.read(buffer);         //读入数据
-                        num = App.getApp().getIsInStre().read(buffer);
+                        num = SplashisInStre.read(buffer);
                         n = 0;
                         String s0 = new String(buffer, 0, num);
                         fmsg += s0;    //保存收到数据
@@ -205,7 +212,7 @@ public class SplashActivity extends AppCompatActivity implements ReadThreadMesg{
                         String s = new String(buffer_new, 0, n);
                         smsg = s;   //写入接收缓存
 //                        if (is.available() == 0) break;  //短时间没有数据才跳出进行显示
-                        if (App.getApp().getIsInStre().available() == 0) break;  //短时间没有数据才跳出进行显示
+                        if (SplashisInStre.available() == 0) break;  //短时间没有数据才跳出进行显示
                     }
                     //发送显示消息，进行显示刷新
                     handler.sendMessage(handler.obtainMessage());
@@ -219,9 +226,9 @@ public class SplashActivity extends AppCompatActivity implements ReadThreadMesg{
     Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Log.e("SplashActivity==",""+smsg);
-            if (smsg.contains("SOK")){
-                startActivity(new Intent(SplashActivity.this,DotLocationActivity.class));
+            Log.e("SplashActivity==", "" + smsg);
+            if (smsg.contains("SOK")) {
+                startActivity(new Intent(SplashActivity.this, DotLocationActivity.class));
                 finish();
             }
         }
@@ -258,14 +265,8 @@ public class SplashActivity extends AppCompatActivity implements ReadThreadMesg{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        if(readThread!=null){
-//            readThread.stop();
-//        }
-    }
-
-    @Override
-    public void onMesg(String mesg) {
-        Log.e("this",""+mesg);
+        readThread.interrupt();
+        handler.removeCallbacks(readThread);
     }
 
 
