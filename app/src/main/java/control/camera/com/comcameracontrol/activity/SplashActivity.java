@@ -154,19 +154,18 @@ public class SplashActivity extends AppCompatActivity {
 
                     //打开接收线程
                     try {
-//                        App.getApp().setIsInStre(App.getApp().get_socket().getInputStream());
                         SplashisInStre = App.getApp().get_socket().getInputStream();
                     } catch (IOException e) {
                         Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-//                    if (bThread == false) {
-//                        readThread.start();
-//                        bThread = true;
-//                    } else {
-//                        bRun = true;
-//                    }
+                    if (bThread == false) {
+                        readThread.start();
+                        bThread = true;
+                    } else {
+                        bRun = true;
+                    }
                 }
                 break;
             default:
@@ -179,6 +178,9 @@ public class SplashActivity extends AppCompatActivity {
     Thread readThread = new Thread() {
 
         public void run() {
+            if(this.isInterrupted()){
+                return;
+            }
             int num = 0;
             byte[] buffer = new byte[1024];
             byte[] buffer_new = new byte[1024];

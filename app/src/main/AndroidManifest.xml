@@ -39,14 +39,14 @@
             android:configChanges="orientation|keyboardHidden"
             />
 
-        <activity android:name=".frag.HomeVideoFrag"
+        <activity android:name=".frag.HomeVideoActivity"
             android:screenOrientation="portrait"
             />
 
         <activity android:name=".activity.DotLocationActivity"
             android:screenOrientation="portrait"
             />
-        <activity android:name=".frag.HomeDelayFrag"
+        <activity android:name=".frag.HomeDelayActivity"
             android:screenOrientation="portrait"
             />
 

@@ -5,17 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -32,14 +27,13 @@ import java.io.OutputStream;
 
 import control.camera.com.comcameracontrol.App;
 import control.camera.com.comcameracontrol.R;
-import control.camera.com.comcameracontrol.View.CirclePgBar;
 import control.camera.com.comcameracontrol.utls.AppUtis;
 import control.camera.com.comcameracontrol.utls.ContextUtil;
 
 /**
  * 延时拍照
  */
-public class HomeDelayFrag extends AppCompatActivity implements View.OnClickListener {
+public class HomeDelayActivity extends AppCompatActivity implements View.OnClickListener {
     private String smsg = "";    //显示用数据缓存
     boolean bRun = true;
     boolean bThread = false;
@@ -164,7 +158,7 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
                 if (actionId == EditorInfo.IME_ACTION_NEXT) {
                     distance = v.getText().toString();
                     if (TextUtils.isEmpty(distance)){
-                        Toast.makeText(HomeDelayFrag.this, "步距离不能为空", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HomeDelayActivity.this, "步距离不能为空", Toast.LENGTH_SHORT).show();
                     }else {
 
 //                        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -192,7 +186,7 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
                 if (actionId == EditorInfo.IME_ACTION_NEXT) {
                     delayTime = v.getText().toString();
                     if (TextUtils.isEmpty(delayTime)){
-                        Toast.makeText(HomeDelayFrag.this, "间隔时间不能为空", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HomeDelayActivity.this, "间隔时间不能为空", Toast.LENGTH_SHORT).show();
                     }else {
                         isDelayTime=true;
                         onSendButtonClicked(ContextUtil.SYJG + AppUtis.speedTime(delayTime) + "#");
@@ -220,7 +214,7 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
                 if (actionId == EditorInfo.IME_ACTION_NEXT) {
                     delaynNum = v.getText().toString();
                     if (TextUtils.isEmpty(delaynNum)){
-                        Toast.makeText(HomeDelayFrag.this, "拍摄数量不能为空", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HomeDelayActivity.this, "拍摄数量不能为空", Toast.LENGTH_SHORT).show();
                     }else {
                         isDelaynNum=true;
                         amount=Integer.valueOf(delaynNum);
@@ -251,7 +245,7 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
 
                     shutterTime = v.getText().toString();
                     if (TextUtils.isEmpty(shutterTime)){
-                        Toast.makeText(HomeDelayFrag.this, "快门时间不能为空", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HomeDelayActivity.this, "快门时间不能为空", Toast.LENGTH_SHORT).show();
                     }else {
                         isShutterTime=true;
                         onSendButtonClicked(ContextUtil.SYKS + AppUtis.shutterTime(shutterTime) + "#");
@@ -274,7 +268,7 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.main_frame_video:
-                startActivity(new Intent(this, HomeVideoFrag.class));
+                startActivity(new Intent(this, HomeVideoActivity.class));
                 finish();
                 break;
             case R.id.delay_ab:
@@ -353,6 +347,9 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
         readThread = new Thread() {
 
             public void run() {
+                if(this.isInterrupted()){
+                    return;
+                }
                 int num = 0;
                 byte[] buffer = new byte[1024];
                 byte[] buffer_new = new byte[1024];
@@ -400,13 +397,7 @@ public class HomeDelayFrag extends AppCompatActivity implements View.OnClickList
                 }
             }
         };
-
-        if (bThread == false) {
             readThread.start();
-            bThread = true;
-        } else {
-            bRun = true;
-        }
     }
 
     @Override

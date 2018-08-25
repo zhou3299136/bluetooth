@@ -8,7 +8,6 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +17,7 @@ import java.io.OutputStream;
 
 import control.camera.com.comcameracontrol.App;
 import control.camera.com.comcameracontrol.R;
-import control.camera.com.comcameracontrol.frag.HomeVideoFrag;
+import control.camera.com.comcameracontrol.frag.HomeVideoActivity;
 import control.camera.com.comcameracontrol.utls.ContextUtil;
 
 public class DotLocationActivity extends Activity implements View.OnClickListener {
@@ -35,10 +34,10 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
     boolean bThread = false;
     private String fmsg = "";    //保存用数据缓存
 
-    public boolean IsADW=false;
-    public boolean IsADWOK=false;
-    public boolean IsBDW=false;
-    public boolean IsBDWOK=false;
+    public boolean IsADW = false;
+    public boolean IsADWOK = false;
+    public boolean IsBDW = false;
+    public boolean IsBDWOK = false;
     private InputStream DotLocatio;    //输入流，用来接收蓝牙数据
 
     @Override
@@ -54,7 +53,7 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
         do_location_A_ok = findViewById(R.id.do_location_A_ok);
         do_location_B = findViewById(R.id.do_location_B);
         do_location_B_ok = findViewById(R.id.do_location_B_ok);
-        do_location_ok=findViewById(R.id.do_location_ok);
+        do_location_ok = findViewById(R.id.do_location_ok);
         do_location_A.setOnClickListener(this);
         do_location_A_ok.setOnClickListener(this);
         do_location_B.setOnClickListener(this);
@@ -66,19 +65,11 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
 
 //        //打开接收线程
         try {
-                DotLocatio = App.getApp().get_socket().getInputStream();
+            DotLocatio = App.getApp().get_socket().getInputStream();
         } catch (IOException e) {
             Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        if (bThread == false) {
-            readThread.start();
-            bThread = true;
-        } else {
-            bRun = true;
-        }
-
 
     }
 
@@ -87,42 +78,42 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.do_location_A:
-                IsADW=true;
+                IsADW = true;
                 onSendButtonClicked(ContextUtil.ADW);
                 do_location_A.setSelected(true);
                 break;
             case R.id.do_location_A_ok:
-                if (IsADW){
-                    IsADWOK=true;
+                if (IsADW) {
+                    IsADWOK = true;
                     onSendButtonClicked(ContextUtil.ADWOK);
                     do_location_A_ok.setSelected(true);
-                }else {
+                } else {
                     Toast.makeText(this, "请先定位A点", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.do_location_B:
-                if (IsADW&&IsADWOK){
-                    IsBDW=true;
+                if (IsADW && IsADWOK) {
+                    IsBDW = true;
                     onSendButtonClicked(ContextUtil.BDW);
                     do_location_B.setSelected(true);
-                }else {
+                } else {
                     Toast.makeText(this, "请先定位A点", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.do_location_B_ok:
-                if (IsBDW){
-                    IsBDWOK=true;
+                if (IsBDW) {
+                    IsBDWOK = true;
                     onSendButtonClicked(ContextUtil.BDWOK);
                     do_location_B_ok.setSelected(true);
-                }else {
+                } else {
                     Toast.makeText(this, "请先定位B点", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.do_location_ok:
-                if (IsADWOK&&IsBDWOK){
-                    startActivity(new Intent(this, HomeVideoFrag.class));
+                if (IsADWOK && IsBDWOK) {
+                    startActivity(new Intent(this, HomeVideoActivity.class));
                     finish();
-                }else {
+                } else {
                     Toast.makeText(this, "请先完成AB点定位", Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -145,10 +136,13 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
     @Override
     protected void onStart() {
         super.onStart();
-        
+
         readThread = new Thread() {
 
             public void run() {
+                if(this.isInterrupted()){
+                    return;
+                }
                 int num = 0;
                 byte[] buffer = new byte[1024];
                 byte[] buffer_new = new byte[1024];
@@ -165,7 +159,7 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
                         while (true) {
                             if (!bThread)//跳出循环
                                 return;
-                            num= DotLocatio.read(buffer);
+                            num = DotLocatio.read(buffer);
                             n = 0;
                             String s0 = new String(buffer, 0, num);
                             fmsg += s0;    //保存收到数据
@@ -179,25 +173,24 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
                                 n++;
                             }
                             String s = new String(buffer_new, 0, n);
-                            Log.e("DotLocationActivity====", "" + s);
+                            Log.e("DotLocationActivity===", "" + s);
                             smsg = s;   //写入接收缓存
 //                        if (is.available() == 0) break;  //短时间没有数据才跳出进行显示
                             if (DotLocatio.available() == 0) break;  //短时间没有数据才跳出进行显示
                         }
                         //发送显示消息，进行显示刷新
                         handler.sendMessage(handler.obtainMessage());
+                        if(this.isInterrupted()){
+                            return;
+                        }
+
                     } catch (IOException e) {
                     }
                 }
             }
         };
-
-        if (bThread == false) {
-            readThread.start();
-            bThread = true;
-        } else {
-            bRun = true;
-        }
+        readThread.start();
+        bThread = true;
     }
 
     @Override

@@ -120,4 +120,8 @@ public class CirclePgBar extends View {
             mRect.set(left, top, right, bottom);
         }
     }
+
+
+
+
 }
