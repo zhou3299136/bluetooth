@@ -174,5 +174,4 @@ public class SplashActivity extends AppCompatActivity implements App.SockeMsg {
         }
     }
 
-
 }

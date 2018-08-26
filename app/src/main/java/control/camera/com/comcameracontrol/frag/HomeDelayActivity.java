@@ -330,7 +330,6 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
         if ((System.currentTimeMillis() - mExitTime) > 2000) {
             Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
             mExitTime = System.currentTimeMillis();
-            return;
         } else {
             try {
                 App.getApp().getIsInStre().close();
@@ -343,6 +342,4 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
             System.exit(0);
         }
     }
-
-
 }
