@@ -68,7 +68,6 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
     public boolean IsSpeed = false;
     public String speed = "";
     public boolean direction = false;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,7 +161,7 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onResume() {
         super.onResume();
-        App.getApp().onSendButtonClicked(ContextUtil.speed + "050#");
+//        App.getApp().onSendButtonClicked(ContextUtil.speed + "050#");
     }
 
     @Override
@@ -182,7 +181,11 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                 video_ba_im.setSelected(false);
                 break;
             case R.id.video_start:
-                if (direction) {
+                if (!direction) {
+                    Toast.makeText(this, "请选择运动方向", Toast.LENGTH_SHORT).show();
+                }else if (!IsSpeed){
+                    Toast.makeText(this, "请设置速度", Toast.LENGTH_SHORT).show();
+                } else {
                     if (IsStartSelected) {
                         IsStartSelected = false;
                         video_start_im.setSelected(false);
@@ -194,8 +197,6 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                         video_start_tv.setText("暂停");
                         App.getApp().onSendButtonClicked(ContextUtil.SPQD);
                     }
-                } else {
-                    Toast.makeText(this, "请选择运动方向", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.video_ba:

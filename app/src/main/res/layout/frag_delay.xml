@@ -85,8 +85,8 @@
 
         <EditText
             android:id="@+id/frag_delay_distance_ed"
-            android:layout_width="36dp"
-            android:layout_height="16dp"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
             android:layout_marginLeft="5dp"
             android:background="@drawable/shape_ed_bg"
             android:paddingLeft="5dp"
@@ -130,8 +130,8 @@
 
         <EditText
             android:id="@+id/frag_delay_time_ed"
-            android:layout_width="36dp"
-            android:layout_height="16dp"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
             android:layout_marginLeft="5dp"
             android:background="@drawable/shape_ed_bg"
             android:paddingLeft="5dp"
@@ -165,8 +165,8 @@
 
         <EditText
             android:id="@+id/frag_delay_num_ed"
-            android:layout_width="32dp"
-            android:layout_height="16dp"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
             android:layout_marginLeft="5dp"
             android:background="@drawable/shape_ed_bg"
             android:inputType="number"
@@ -331,8 +331,8 @@
 
         <EditText
             android:id="@+id/delay_shutter_time"
-            android:layout_width="32dp"
-            android:layout_height="16dp"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="13dp"
             android:background="@drawable/shape_ed_bg"
