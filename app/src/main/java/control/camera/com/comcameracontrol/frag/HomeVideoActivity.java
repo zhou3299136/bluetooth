@@ -32,10 +32,8 @@ import control.camera.com.comcameracontrol.utls.ContextUtil;
 /**
  * 视频模式
  */
-public class HomeVideoActivity extends AppCompatActivity implements View.OnClickListener {
+public class HomeVideoActivity extends AppCompatActivity implements View.OnClickListener, App.SockeMsg {
 
-    private View MyView;
-    private static HomeVideoActivity self;
 
     public TextView frag_video_quantity;
     public ProgressBar frag_video_quantity_progress;
@@ -67,11 +65,6 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
     public boolean IsbasSelected = false;
     public boolean IsShutterSelected = false;
     public boolean IsCourseSelected = false;
-
-    private String smsg = "";    //显示用数据缓存
-    boolean bRun = true;
-    boolean bThread = false;
-    private String fmsg = "";    //保存用数据缓存
     public boolean IsSpeed = false;
     public String speed = "";
     public boolean direction = false;
@@ -80,9 +73,10 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frag_video);
+        App.getApp().setMonMesgIstener(this);
         initView();
         InitData();
-        onSendButtonClicked(ContextUtil.video);
+        App.getApp().onSendButtonClicked(ContextUtil.video);
     }
 
 
@@ -122,14 +116,6 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
 
     public void InitData() {
         main_frame_video.setSelected(true);
-        //打开接收线程
-//        try {
-//            HomeVideoio = App.getApp().get_socket().getInputStream();
-//        } catch (IOException e) {
-//            Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-
 
         frag_video_quantity_speed.setMax(100);
         frag_video_quantity_speed.setProgress(50);
@@ -155,7 +141,7 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                             Toast.makeText(HomeVideoActivity.this, "最大速度为100，请重新输入", Toast.LENGTH_SHORT).show();
                         } else {
                             IsSpeed = true;
-                            onSendButtonClicked(ContextUtil.speed + AppUtis.speedTime(speed) + "#");
+                            App.getApp().onSendButtonClicked(ContextUtil.speed + AppUtis.speedTime(speed) + "#");
                             frag_video_quantity_speed.setProgress(Integer.valueOf(speed));
                             //隐藏软键盘
                             InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -172,83 +158,11 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
 
     }
 
-    //接收数据线程
-    //接收数据线程
-    Thread readThread = null;
-
-    //消息处理队列
-    Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            Log.e("HomeVideoFrag----", "" + smsg);
-        }
-    };
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        readThread = new Thread() {
-            public void run() {
-                if(this.isInterrupted()){
-                    return;
-                }
-                int num = 0;
-                byte[] buffer = new byte[1024];
-                byte[] buffer_new = new byte[1024];
-                int i = 0;
-                int n = 0;
-                bRun = true;
-                //接收线程
-                while (true) {
-                    try {
-                        while (App.getApp().getIsInStre().available() == 0) {
-                            while (bRun == false) {
-                            }
-                        }
-                        while (true) {
-                            if (!bThread)//跳出循环
-                                return;
-                            num = App.getApp().getIsInStre().read(buffer);         //读入数据
-                            n = 0;
-                            String s0 = new String(buffer, 0, num);
-                            fmsg += s0;    //保存收到数据
-                            for (i = 0; i < num; i++) {
-                                if ((buffer[i] == 0x0d) && (buffer[i + 1] == 0x0a)) {
-                                    buffer_new[n] = 0x0a;
-                                    i++;
-                                } else {
-                                    buffer_new[n] = buffer[i];
-                                }
-                                n++;
-                            }
-                            String s = new String(buffer_new, 0, n);
-                            smsg = s;   //写入接收缓存
-                            Log.e("HomeVideoFrag===", "" + smsg);
-                            if (App.getApp().getIsInStre().available() == 0) break;  //短时间没有数据才跳出进行显示
-                        }
-                        //发送显示消息，进行显示刷新
-                        handler.sendMessage(handler.obtainMessage());
-                    } catch (IOException e) {
-                    }
-                }
-            }
-        };
-
-        readThread.start();
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        readThread.interrupt();
-        handler.removeCallbacks(readThread);
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        onSendButtonClicked(ContextUtil.speed + "050#");
+        App.getApp().onSendButtonClicked(ContextUtil.speed + "050#");
     }
 
     @Override
@@ -262,7 +176,7 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                     video_ab_im.setSelected(true);
                     IsabsSelected = true;
                     direction = true;
-                    onSendButtonClicked(ContextUtil.FXAB);
+                    App.getApp().onSendButtonClicked(ContextUtil.FXAB);
                 }
                 IsbasSelected = false;
                 video_ba_im.setSelected(false);
@@ -273,12 +187,12 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                         IsStartSelected = false;
                         video_start_im.setSelected(false);
                         video_start_tv.setText("开始");
-                        onSendButtonClicked(ContextUtil.SPTZ);
+                        App.getApp().onSendButtonClicked(ContextUtil.SPTZ);
                     } else {
                         IsStartSelected = true;
                         video_start_im.setSelected(true);
                         video_start_tv.setText("暂停");
-                        onSendButtonClicked(ContextUtil.SPQD);
+                        App.getApp().onSendButtonClicked(ContextUtil.SPQD);
                     }
                 } else {
                     Toast.makeText(this, "请选择运动方向", Toast.LENGTH_SHORT).show();
@@ -292,7 +206,7 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                     IsbasSelected = true;
                     video_ba_im.setSelected(true);
                     direction = true;
-                    onSendButtonClicked(ContextUtil.FXBA);
+                    App.getApp().onSendButtonClicked(ContextUtil.FXBA);
                 }
                 IsabsSelected = false;
                 video_ab_im.setSelected(false);
@@ -301,12 +215,12 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                 if (IsShutterSelected) {
                     IsShutterSelected = false;
                     video_shutter_im.setSelected(false);
-                    onSendButtonClicked(ContextUtil.SPK0);
+                    App.getApp().onSendButtonClicked(ContextUtil.SPK0);
                     Toast.makeText(this, "快门关闭", Toast.LENGTH_SHORT).show();
                 } else {
                     IsShutterSelected = true;
                     video_shutter_im.setSelected(true);
-                    onSendButtonClicked(ContextUtil.SPK1);
+                    App.getApp().onSendButtonClicked(ContextUtil.SPK1);
                     Toast.makeText(this, "快门开启", Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -314,12 +228,12 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                 if (IsCourseSelected) {
                     IsCourseSelected = false;
                     video_course_course.setSelected(false);
-                    onSendButtonClicked(ContextUtil.SPSD);
+                    App.getApp().onSendButtonClicked(ContextUtil.SPSD);
                     Toast.makeText(this, "自动返航关", Toast.LENGTH_SHORT).show();
                 } else {
                     IsCourseSelected = true;
                     video_course_course.setSelected(true);
-                    onSendButtonClicked(ContextUtil.SPZD);
+                    App.getApp().onSendButtonClicked(ContextUtil.SPZD);
                     Toast.makeText(this, "自动返航开", Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -331,29 +245,37 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
-    public void onSendButtonClicked(String type) {
-        int i = 0;
-        int n = 0;
-        try {
-            OutputStream os = App.getApp().get_socket().getOutputStream();   //蓝牙连接输出流
-            byte[] bos = type.getBytes();
-            for (i = 0; i < bos.length; i++) {
-                if (bos[i] == 0x0a) n++;
+    @Override
+    public void onMessAge(String message) {
+        Log.e("HomeVideoActivity", "" + message);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            exitApp();
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private long mExitTime = 0;
+
+    private void exitApp() {
+        if ((System.currentTimeMillis() - mExitTime) > 2000) {
+            Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+            mExitTime = System.currentTimeMillis();
+            return;
+        } else {
+            try {
+                App.getApp().getIsInStre().close();
+                App.getApp().get_socket().close();
+                App.getApp().set_socket(null);
+                App.getApp().setMonMesgIstener(null);
+            } catch (IOException e) {
             }
-            byte[] bos_new = new byte[bos.length + n];
-            n = 0;
-            for (i = 0; i < bos.length; i++) { //手机中换行为0a,将其改为0d 0a后再发送
-                if (bos[i] == 0x0a) {
-                    bos_new[n] = 0x0d;
-                    n++;
-                    bos_new[n] = 0x0a;
-                } else {
-                    bos_new[n] = bos[i];
-                }
-                n++;
-            }
-            os.write(bos_new);
-        } catch (IOException e) {
+            finish();
+            System.exit(0);
         }
     }
 

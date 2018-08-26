@@ -11,6 +11,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,15 +27,11 @@ import control.camera.com.comcameracontrol.utls.ContextUtil;
 
 public class SplashActivity extends AppCompatActivity implements App.SockeMsg {
 
+
     private final static int REQUEST_CONNECT_DEVICE = 1;    //宏定义查询设备句柄
-    //    boolean bRun = true;
-//    boolean bThread = false;
-//    private String smsg = "";    //显示用数据缓存
-//    private String fmsg = "";    //保存用数据缓存
     private TextView connecting_device;
-    //    private InputStream SplashisInStre;    //输入流，用来接收蓝牙数据
     //接收数据线程
-    private Thread readThread = null;
+//    private Thread readThread = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,7 +79,6 @@ public class SplashActivity extends AppCompatActivity implements App.SockeMsg {
                 onConnectButtonClicked();
             }
         });
-        App.getApp().setMonMesgIstener(this);
     }
 
     public void onConnectButtonClicked() {
@@ -98,7 +94,6 @@ public class SplashActivity extends AppCompatActivity implements App.SockeMsg {
         } else {
             //关闭连接socket
             try {
-//                bRun = false;
                 Thread.sleep(2000);
                 App.getApp().getIsInStre().close();
                 App.getApp().get_socket().close();
@@ -131,10 +126,16 @@ public class SplashActivity extends AppCompatActivity implements App.SockeMsg {
 
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        App.getApp().setMonMesgIstener(null);
+    protected void onStart() {
+        super.onStart();
+        App.getApp().setMonMesgIstener(this);
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
 
     @Override
     public void onMessAge(String message) {
@@ -144,4 +145,34 @@ public class SplashActivity extends AppCompatActivity implements App.SockeMsg {
             finish();
         }
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            exitApp();
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private long mExitTime = 0;
+    private void exitApp() {
+        if ((System.currentTimeMillis() - mExitTime) > 2000) {
+            Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+            mExitTime = System.currentTimeMillis();
+            return;
+        } else {
+            try {
+                App.getApp().getIsInStre().close();
+                App.getApp().get_socket().close();
+                App.getApp().set_socket(null);
+                App.getApp().setMonMesgIstener(null);
+            } catch (IOException e) {
+            }
+            finish();
+            System.exit(0);
+        }
+    }
+
+
 }

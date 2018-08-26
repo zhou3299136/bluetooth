@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,7 +58,7 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
     }
 
     public void initData() {
-        App.getApp().setMonMesgIstener(this);
+//        App.getApp().setMonMesgIstener(this);
     }
 
 
@@ -108,16 +109,51 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
     }
 
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        App.getApp().setMonMesgIstener(this);
+    }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        App.getApp().setMonMesgIstener(null);
+    protected void onStop() {
+        super.onStop();
     }
 
     @Override
     public void onMessAge(String message) {
         Log.e("DotLocationActivity", "" + message);
     }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            exitApp();
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private long mExitTime = 0;
+    private void exitApp() {
+        if ((System.currentTimeMillis() - mExitTime) > 2000) {
+            Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+            mExitTime = System.currentTimeMillis();
+            return;
+        } else {
+            try {
+                App.getApp().getIsInStre().close();
+                App.getApp().get_socket().close();
+                App.getApp().set_socket(null);
+                App.getApp().setMonMesgIstener(null);
+            } catch (IOException e) {
+            }
+            finish();
+            System.exit(0);
+        }
+    }
+
+
 
 }

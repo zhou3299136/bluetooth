@@ -34,9 +34,10 @@ public class App extends Application {
 
     public SockeMsg monMesgIstener;
 
-    public void setMonMesgIstener(SockeMsg monMesgIstener) {
-        this.monMesgIstener = monMesgIstener;
+    public void setMonMesgIstener(SockeMsg sMesgIstener) {
+        this.monMesgIstener = sMesgIstener;
     }
+
 
     public InputStream getIsInStre() {
         return isInStre;
