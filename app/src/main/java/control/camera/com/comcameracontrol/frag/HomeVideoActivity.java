@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,8 +39,7 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
     public TextView frag_video_quantity;
     public ProgressBar frag_video_quantity_progress;
 
-    public EditText video_speed;
-    public ProgressBar frag_video_quantity_speed;
+    public TextView video_speed;
 
     public LinearLayout video_ab;
     public ImageView video_ab_im;
@@ -60,6 +60,8 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
     public TextView main_frame_video;
     public TextView main_frame_delay;
 
+    public SeekBar frag_video_quantity_seek;
+
     public boolean IsabsSelected = false;
     public boolean IsStartSelected = false;
     public boolean IsbasSelected = false;
@@ -68,6 +70,8 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
     public boolean IsSpeed = false;
     public String speed = "";
     public boolean direction = false;
+    public int Speedprogress = 0;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +79,7 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
         App.getApp().setMonMesgIstener(this);
         initView();
         InitData();
-        App.getApp().onSendButtonClicked(ContextUtil.video);
+//        App.getApp().onSendButtonClicked(ContextUtil.video);
     }
 
 
@@ -84,7 +88,6 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
         frag_video_quantity_progress = findViewById(R.id.frag_video_quantity_progress);
 
         video_speed = findViewById(R.id.video_speed);
-        frag_video_quantity_speed = findViewById(R.id.frag_video_quantity_speed);
 
         video_ab = findViewById(R.id.video_ab);
         video_ab_im = findViewById(R.id.video_ab_im);
@@ -105,6 +108,8 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
         main_frame_video = findViewById(R.id.main_frame_video);
         main_frame_delay = findViewById(R.id.main_frame_delay);
 
+        frag_video_quantity_seek = findViewById(R.id.frag_video_quantity_seek);
+
         video_ab.setOnClickListener(this);
         video_start.setOnClickListener(this);
         video_ba.setOnClickListener(this);
@@ -116,44 +121,55 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
     public void InitData() {
         main_frame_video.setSelected(true);
 
-        frag_video_quantity_speed.setMax(100);
-        frag_video_quantity_speed.setProgress(50);
 
         frag_video_quantity_progress.setMax(100);
         frag_video_quantity_progress.setProgress(100);
 
-        video_speed.setFocusable(true);
-        video_speed.setFocusableInTouchMode(true);
-        video_speed.requestFocus();
-
-        video_speed.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        frag_video_quantity_seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                Speedprogress = progress;
+                video_speed.setText("" + progress);
+            }
 
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                //判断是否是“完成”键
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    speed = v.getText().toString();
-                    if (TextUtils.isEmpty(speed)) {
-                        Toast.makeText(HomeVideoActivity.this, "速度不能为空", Toast.LENGTH_SHORT).show();
-                    } else {
-                        if (Integer.valueOf(speed) > 100) {
-                            Toast.makeText(HomeVideoActivity.this, "最大速度为100，请重新输入", Toast.LENGTH_SHORT).show();
-                        } else {
-                            IsSpeed = true;
-                            App.getApp().onSendButtonClicked(ContextUtil.speed + AppUtis.speedTime(speed) + "#");
-                            frag_video_quantity_speed.setProgress(Integer.valueOf(speed));
-                            //隐藏软键盘
-                            InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                            if (imm.isActive()) {
-                                imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
-                            }
-                        }
-                    }
-                    return true;
-                }
-                return false;
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+//                App.getApp().onSendButtonClicked(ContextUtil.speed + AppUtis.speedTime(String.valueOf(Speedprogress)) + "#");
             }
         });
+
+
+//        video_speed.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                //判断是否是“完成”键
+//                if (actionId == EditorInfo.IME_ACTION_DONE) {
+//                    speed = v.getText().toString();
+//                    if (TextUtils.isEmpty(speed)) {
+//                        Toast.makeText(HomeVideoActivity.this, "速度不能为空", Toast.LENGTH_SHORT).show();
+//                    } else {
+//                        if (Integer.valueOf(speed) > 100) {
+//                            Toast.makeText(HomeVideoActivity.this, "最大速度为100，请重新输入", Toast.LENGTH_SHORT).show();
+//                        } else {
+//                            IsSpeed = true;
+//                            frag_video_quantity_speed.setProgress(Integer.valueOf(speed));
+//                            //隐藏软键盘
+//                            InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                            if (imm.isActive()) {
+//                                imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+//                            }
+//                        }
+//                    }
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
 
     }
 
@@ -183,7 +199,7 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
             case R.id.video_start:
                 if (!direction) {
                     Toast.makeText(this, "请选择运动方向", Toast.LENGTH_SHORT).show();
-                }else if (!IsSpeed){
+                } else if (Speedprogress==0) {
                     Toast.makeText(this, "请设置速度", Toast.LENGTH_SHORT).show();
                 } else {
                     if (IsStartSelected) {
@@ -213,17 +229,29 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                 video_ab_im.setSelected(false);
                 break;
             case R.id.video_shutter:
-                if (IsShutterSelected) {
-                    IsShutterSelected = false;
-                    video_shutter_im.setSelected(false);
-                    App.getApp().onSendButtonClicked(ContextUtil.SPK0);
-                    Toast.makeText(this, "快门关闭", Toast.LENGTH_SHORT).show();
-                } else {
-                    IsShutterSelected = true;
-                    video_shutter_im.setSelected(true);
-                    App.getApp().onSendButtonClicked(ContextUtil.SPK1);
-                    Toast.makeText(this, "快门开启", Toast.LENGTH_SHORT).show();
-                }
+//                if (IsShutterSelected) {
+//                    IsShutterSelected = false;
+                video_shutter_im.setSelected(true);
+                new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+                video_shutter_im.setSelected(false);
+//                    App.getApp().onSendButtonClicked(ContextUtil.SPK0);
+//                    Toast.makeText(this, "快门关闭", Toast.LENGTH_SHORT).show();
+//                }
+//                else {
+//                    IsShutterSelected = true;
+//                    video_shutter_im.setSelected(true);
+////                    App.getApp().onSendButtonClicked(ContextUtil.SPK1);
+//                    Toast.makeText(this, "快门开启", Toast.LENGTH_SHORT).show();
+//                }
+
                 break;
             case R.id.video_course:
                 if (IsCourseSelected) {

@@ -90,7 +90,7 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
         App.getApp().setMonMesgIstener(this);
         initView();
         initData();
-        App.getApp().onSendButtonClicked(ContextUtil.MSP);
+//        App.getApp().onSendButtonClicked(ContextUtil.MSP);
     }
 
 

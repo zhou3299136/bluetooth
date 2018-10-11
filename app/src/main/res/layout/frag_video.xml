@@ -71,36 +71,34 @@
             android:textColor="@color/white"
             android:textSize="15sp" />
 
-        <EditText
+        <TextView
             android:id="@+id/video_speed"
-            android:layout_width="50dp"
-            android:layout_height="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:layout_marginLeft="5dp"
-            android:inputType="number"
-            android:maxLength="3"
-            android:background="@drawable/shape_edit_bg"
+            android:text="0"
             android:textSize="12sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0-100"
+            android:text="(0-100)"
             android:layout_marginLeft="5dp"
             android:textColor="@color/white"
             android:textSize="12sp" />
 
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/frag_video_quantity_speed"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+    <SeekBar
+        android:id="@+id/frag_video_quantity_seek"
         android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:layout_marginLeft="13dp"
+        android:layout_height="10dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginRight="13dp"
         android:layout_marginTop="10dp"
-        android:progressDrawable="@drawable/progress_bar_layer_list" />
+        />
+
 
     <LinearLayout
         android:layout_width="match_parent"

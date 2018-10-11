@@ -76,7 +76,9 @@ public class SplashActivity extends AppCompatActivity implements App.SockeMsg {
         connecting_device.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onConnectButtonClicked();
+                startActivity(new Intent(SplashActivity.this,DotLocationActivity.class));
+                finish();
+//                onConnectButtonClicked();
             }
         });
     }
