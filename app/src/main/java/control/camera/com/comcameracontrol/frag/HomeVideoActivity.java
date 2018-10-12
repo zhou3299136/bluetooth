@@ -1,30 +1,19 @@
 package control.camera.com.comcameracontrol.frag;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import control.camera.com.comcameracontrol.App;
 import control.camera.com.comcameracontrol.R;
 import control.camera.com.comcameracontrol.utls.AppUtis;
@@ -79,7 +68,7 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
         App.getApp().setMonMesgIstener(this);
         initView();
         InitData();
-//        App.getApp().onSendButtonClicked(ContextUtil.video);
+        App.getApp().onSendButtonClicked(ContextUtil.video);
     }
 
 
@@ -138,38 +127,10 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-//                App.getApp().onSendButtonClicked(ContextUtil.speed + AppUtis.speedTime(String.valueOf(Speedprogress)) + "#");
+                App.getApp().onSendButtonClicked(ContextUtil.speed + AppUtis.speedTime(String.valueOf(Speedprogress)) + "#");
             }
         });
 
-
-//        video_speed.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//
-//            @Override
-//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                //判断是否是“完成”键
-//                if (actionId == EditorInfo.IME_ACTION_DONE) {
-//                    speed = v.getText().toString();
-//                    if (TextUtils.isEmpty(speed)) {
-//                        Toast.makeText(HomeVideoActivity.this, "速度不能为空", Toast.LENGTH_SHORT).show();
-//                    } else {
-//                        if (Integer.valueOf(speed) > 100) {
-//                            Toast.makeText(HomeVideoActivity.this, "最大速度为100，请重新输入", Toast.LENGTH_SHORT).show();
-//                        } else {
-//                            IsSpeed = true;
-//                            frag_video_quantity_speed.setProgress(Integer.valueOf(speed));
-//                            //隐藏软键盘
-//                            InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-//                            if (imm.isActive()) {
-//                                imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
-//                            }
-//                        }
-//                    }
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
 
     }
 
