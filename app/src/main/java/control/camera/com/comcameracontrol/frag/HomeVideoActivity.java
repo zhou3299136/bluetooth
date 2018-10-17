@@ -13,7 +13,9 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import java.io.IOException;
+
 import control.camera.com.comcameracontrol.App;
 import control.camera.com.comcameracontrol.R;
 import control.camera.com.comcameracontrol.utls.AppUtis;
@@ -138,7 +140,6 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onResume() {
         super.onResume();
-//        App.getApp().onSendButtonClicked(ContextUtil.speed + "050#");
     }
 
     @Override
@@ -160,7 +161,7 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
             case R.id.video_start:
                 if (!direction) {
                     Toast.makeText(this, "请选择运动方向", Toast.LENGTH_SHORT).show();
-                } else if (Speedprogress==0) {
+                } else if (Speedprogress == 0) {
                     Toast.makeText(this, "请设置速度", Toast.LENGTH_SHORT).show();
                 } else {
                     if (IsStartSelected) {
@@ -190,28 +191,17 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                 video_ab_im.setSelected(false);
                 break;
             case R.id.video_shutter:
-//                if (IsShutterSelected) {
-//                    IsShutterSelected = false;
-                video_shutter_im.setSelected(true);
-                new Thread(new Runnable() {
-                    public void run() {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
-                video_shutter_im.setSelected(false);
-//                    App.getApp().onSendButtonClicked(ContextUtil.SPK0);
-//                    Toast.makeText(this, "快门关闭", Toast.LENGTH_SHORT).show();
-//                }
-//                else {
-//                    IsShutterSelected = true;
-//                    video_shutter_im.setSelected(true);
-////                    App.getApp().onSendButtonClicked(ContextUtil.SPK1);
-//                    Toast.makeText(this, "快门开启", Toast.LENGTH_SHORT).show();
-//                }
+                if (IsShutterSelected) {
+                    IsShutterSelected = false;
+                    video_shutter_im.setSelected(false);
+                    App.getApp().onSendButtonClicked(ContextUtil.SPK0);
+                    Toast.makeText(this, "快门关闭", Toast.LENGTH_SHORT).show();
+                } else {
+                    IsShutterSelected = true;
+                    video_shutter_im.setSelected(true);
+                    App.getApp().onSendButtonClicked(ContextUtil.SPK1);
+                    Toast.makeText(this, "快门开启", Toast.LENGTH_SHORT).show();
+                }
 
                 break;
             case R.id.video_course:
