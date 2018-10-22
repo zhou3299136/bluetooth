@@ -20,7 +20,7 @@ public class AppUtis {
     public static String SykDelaynNum(String speedTime){
         int time=Integer.valueOf(speedTime);
         String speed = "";
-        if (time<100&&time>10){
+        if (time<100&&time>=10){
             speed="000"+speedTime;
         }else if (time<10){
             speed="0000"+speedTime;

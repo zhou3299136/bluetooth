@@ -97,12 +97,12 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
                 }
                 break;
             case R.id.do_location_ok:
-//                if (IsADWOK && IsBDWOK) {
+                if (IsADWOK && IsBDWOK) {
                     startActivity(new Intent(this, HomeVideoActivity.class));
                     finish();
-//                } else {
-//                    Toast.makeText(this, "请先完成AB点定位", Toast.LENGTH_SHORT).show();
-//                }
+                } else {
+                    Toast.makeText(this, "请先完成AB点定位", Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
     }

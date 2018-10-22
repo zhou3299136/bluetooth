@@ -1,30 +1,21 @@
 package control.camera.com.comcameracontrol.frag;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import control.camera.com.comcameracontrol.App;
 import control.camera.com.comcameracontrol.R;
 import control.camera.com.comcameracontrol.utls.AppUtis;
@@ -121,7 +112,6 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
     public void InitData() {
         main_frame_video.setSelected(true);
 
-
         frag_video_quantity_progress.setMax(100);
         frag_video_quantity_progress.setProgress(100);
 
@@ -142,42 +132,12 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
             }
         });
 
-
-//        video_speed.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//
-//            @Override
-//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                //判断是否是“完成”键
-//                if (actionId == EditorInfo.IME_ACTION_DONE) {
-//                    speed = v.getText().toString();
-//                    if (TextUtils.isEmpty(speed)) {
-//                        Toast.makeText(HomeVideoActivity.this, "速度不能为空", Toast.LENGTH_SHORT).show();
-//                    } else {
-//                        if (Integer.valueOf(speed) > 100) {
-//                            Toast.makeText(HomeVideoActivity.this, "最大速度为100，请重新输入", Toast.LENGTH_SHORT).show();
-//                        } else {
-//                            IsSpeed = true;
-//                            frag_video_quantity_speed.setProgress(Integer.valueOf(speed));
-//                            //隐藏软键盘
-//                            InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-//                            if (imm.isActive()) {
-//                                imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
-//                            }
-//                        }
-//                    }
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
-
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-//        App.getApp().onSendButtonClicked(ContextUtil.speed + "050#");
     }
 
     @Override
@@ -199,7 +159,7 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
             case R.id.video_start:
                 if (!direction) {
                     Toast.makeText(this, "请选择运动方向", Toast.LENGTH_SHORT).show();
-                } else if (Speedprogress==0) {
+                } else if (Speedprogress == 0) {
                     Toast.makeText(this, "请设置速度", Toast.LENGTH_SHORT).show();
                 } else {
                     if (IsStartSelected) {
@@ -229,29 +189,7 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                 video_ab_im.setSelected(false);
                 break;
             case R.id.video_shutter:
-//                if (IsShutterSelected) {
-//                    IsShutterSelected = false;
-                video_shutter_im.setSelected(true);
-                new Thread(new Runnable() {
-                    public void run() {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
-                video_shutter_im.setSelected(false);
-//                    App.getApp().onSendButtonClicked(ContextUtil.SPK0);
-//                    Toast.makeText(this, "快门关闭", Toast.LENGTH_SHORT).show();
-//                }
-//                else {
-//                    IsShutterSelected = true;
-//                    video_shutter_im.setSelected(true);
-////                    App.getApp().onSendButtonClicked(ContextUtil.SPK1);
-//                    Toast.makeText(this, "快门开启", Toast.LENGTH_SHORT).show();
-//                }
-
+                App.getApp().onSendButtonClicked(ContextUtil.SPK1);
                 break;
             case R.id.video_course:
                 if (IsCourseSelected) {

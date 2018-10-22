@@ -70,7 +70,7 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
 
 
     public String delayTime="";
-    public String delaynNum="";
+    public String delaynNum="";//拍摄张数
     public String distance="";
     public String shutterTime="";
 
@@ -79,7 +79,6 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
     public boolean isDistance=false;
     public boolean isShutterTime=false;
 
-    public int amount=0;
     public int completion=0;
 
 
@@ -200,7 +199,6 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
                         Toast.makeText(HomeDelayActivity.this, "拍摄数量不能为空", Toast.LENGTH_SHORT).show();
                     }else {
                         isDelaynNum=true;
-                        amount=Integer.valueOf(delaynNum);
                         App.getApp().onSendButtonClicked(ContextUtil.SYZS + AppUtis.SykDelaynNum(delaynNum) + "#");
                         delay_shutter_time.requestFocus();
                     }
@@ -309,10 +307,9 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void onMessAge(String message) {
         if (message.contains("SYWC")){
-            String num=message.substring(4,message.length());
+            String num=message.substring(5,message.length());
             num.replace("#","");
-            frag_delay_complete_num.setText(""+num);
-
+            frag_delay_complete_num.setText(""+Integer.parseInt(num));
         }
     }
 

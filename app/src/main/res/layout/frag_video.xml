@@ -93,7 +93,7 @@
     <SeekBar
         android:id="@+id/frag_video_quantity_seek"
         android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:layout_height="20dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="13dp"
         android:layout_marginTop="10dp"
@@ -201,7 +201,8 @@
                 android:id="@+id/video_shutter_im"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
-                android:src="@drawable/shape_video_shutter" />
+                android:background="@drawable/shape_video_shutter"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
