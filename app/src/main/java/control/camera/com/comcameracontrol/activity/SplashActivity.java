@@ -78,9 +78,7 @@ public class SplashActivity extends AppCompatActivity implements App.SockeMsg {
         connecting_device.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(SplashActivity.this,DotLocationActivity.class));
-                finish();
-//                onConnectButtonClicked();
+                onConnectButtonClicked();
             }
         });
     }
@@ -143,7 +141,6 @@ public class SplashActivity extends AppCompatActivity implements App.SockeMsg {
 
     @Override
     public void onMessAge(String message) {
-        Log.e("splash",""+message);
         if (message.contains("SOK")) {
             startActivity(new Intent(this,DotLocationActivity.class));
             finish();

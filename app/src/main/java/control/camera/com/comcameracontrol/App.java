@@ -34,6 +34,8 @@ public class App extends Application {
 
     public SockeMsg monMesgIstener;
 
+    public String ISdunakai="1";
+
     public void setMonMesgIstener(SockeMsg sMesgIstener) {
         this.monMesgIstener = sMesgIstener;
     }
@@ -71,6 +73,13 @@ public class App extends Application {
         this._device = _device;
     }
 
+    public String getISdunakai() {
+        return ISdunakai;
+    }
+
+    public void setISdunakai(String ISdunakai) {
+        this.ISdunakai = ISdunakai;
+    }
 
     public interface SockeMsg{
         void onMessAge(String message);
@@ -107,6 +116,15 @@ public class App extends Application {
                         while (App.getApp().getIsInStre().available() == 0) {
 
                         }
+
+                        try {
+                            App.getApp().setIsInStre(App.getApp().get_socket().getInputStream());
+                        } catch (IOException e) {
+                            Log.e("this","333333333");
+
+                            return;
+                        }
+
                         while (true) {
                             num = getIsInStre().read(buffer);
                             n = 0;
@@ -122,8 +140,11 @@ public class App extends Application {
                             }
                             String s = new String(buffer_new, 0, n);
                             smsg = s;   //写入接收缓存
-                            if (App.getApp().getIsInStre().available() == 0)
+                            if (App.getApp().getIsInStre().available() == 0){
+//                                setISdunakai("0");
                                 break;  //短时间没有数据才跳出进行显示
+                            }else {
+                            }
                         }
                         //发送显示消息，进行显示刷新
                         handler.sendMessage(handler.obtainMessage());
@@ -162,7 +183,7 @@ public class App extends Application {
         try {
             App.getApp().setIsInStre(App.getApp().get_socket().getInputStream());
         } catch (IOException e) {
-            Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
             return;
         }
 

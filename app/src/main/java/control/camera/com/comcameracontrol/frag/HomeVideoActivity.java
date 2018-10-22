@@ -14,8 +14,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import control.camera.com.comcameracontrol.App;
 import control.camera.com.comcameracontrol.R;
 import control.camera.com.comcameracontrol.utls.AppUtis;
@@ -70,7 +68,7 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
         App.getApp().setMonMesgIstener(this);
         initView();
         InitData();
-//        App.getApp().onSendButtonClicked(ContextUtil.video);
+        App.getApp().onSendButtonClicked(ContextUtil.video);
     }
 
 
@@ -128,10 +126,9 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-//                App.getApp().onSendButtonClicked(ContextUtil.speed + AppUtis.speedTime(String.valueOf(Speedprogress)) + "#");
+                App.getApp().onSendButtonClicked(ContextUtil.speed + AppUtis.speedTime(String.valueOf(Speedprogress)) + "#");
             }
         });
-
     }
 
 
@@ -190,6 +187,18 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.video_shutter:
                 App.getApp().onSendButtonClicked(ContextUtil.SPK1);
+//                if (IsShutterSelected) {
+//                    IsShutterSelected = false;
+//                    video_shutter_im.setSelected(false);
+//                    App.getApp().onSendButtonClicked(ContextUtil.SPK0);
+//                    Toast.makeText(this, "快门关闭", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    IsShutterSelected = true;
+//                    video_shutter_im.setSelected(true);
+//                    App.getApp().onSendButtonClicked(ContextUtil.SPK1);
+//                    Toast.makeText(this, "快门开启", Toast.LENGTH_SHORT).show();
+//                }
+
                 break;
             case R.id.video_course:
                 if (IsCourseSelected) {
