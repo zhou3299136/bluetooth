@@ -142,10 +142,8 @@ public class App extends Application {
                             smsg = s;   //写入接收缓存
                             if (App.getApp().getIsInStre().available() == 0){
 //                                setISdunakai("0");
-                                Log.e("this","11111");
                                 break;  //短时间没有数据才跳出进行显示
                             }else {
-                                Log.e("this","22222");
                             }
                         }
                         //发送显示消息，进行显示刷新
@@ -185,8 +183,6 @@ public class App extends Application {
         try {
             App.getApp().setIsInStre(App.getApp().get_socket().getInputStream());
         } catch (IOException e) {
-            Log.e("this","333333333");
-
 //            Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
             return;
         }

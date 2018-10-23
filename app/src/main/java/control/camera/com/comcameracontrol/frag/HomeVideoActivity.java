@@ -13,9 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.IOException;
-
 import control.camera.com.comcameracontrol.App;
 import control.camera.com.comcameracontrol.R;
 import control.camera.com.comcameracontrol.utls.AppUtis;
@@ -111,9 +109,6 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
 
     public void InitData() {
         main_frame_video.setSelected(true);
-
-
-
         frag_video_quantity_progress.setMax(100);
         frag_video_quantity_progress.setProgress(100);
 
@@ -133,8 +128,6 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                 App.getApp().onSendButtonClicked(ContextUtil.speed + AppUtis.speedTime(String.valueOf(Speedprogress)) + "#");
             }
         });
-
-
     }
 
 
@@ -192,18 +185,7 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                 video_ab_im.setSelected(false);
                 break;
             case R.id.video_shutter:
-                if (IsShutterSelected) {
-                    IsShutterSelected = false;
-                    video_shutter_im.setSelected(false);
-                    App.getApp().onSendButtonClicked(ContextUtil.SPK0);
-                    Toast.makeText(this, "快门关闭", Toast.LENGTH_SHORT).show();
-                } else {
-                    IsShutterSelected = true;
-                    video_shutter_im.setSelected(true);
-                    App.getApp().onSendButtonClicked(ContextUtil.SPK1);
-                    Toast.makeText(this, "快门开启", Toast.LENGTH_SHORT).show();
-                }
-
+                App.getApp().onSendButtonClicked(ContextUtil.SPK1);
                 break;
             case R.id.video_course:
                 if (IsCourseSelected) {

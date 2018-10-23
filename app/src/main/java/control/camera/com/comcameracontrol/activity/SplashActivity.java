@@ -31,7 +31,6 @@ public class SplashActivity extends AppCompatActivity implements App.SockeMsg {
     private final static int REQUEST_CONNECT_DEVICE = 1;    //宏定义查询设备句柄
     private TextView connecting_device;
     //接收数据线程
-//    private Thread readThread = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

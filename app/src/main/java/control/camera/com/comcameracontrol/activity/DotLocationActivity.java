@@ -122,7 +122,6 @@ public class DotLocationActivity extends Activity implements View.OnClickListene
     @Override
     public void onMessAge(String message) {
         Log.e("DotLocationActivity", "" + message);
-        Log.e("this",""+App.getApp().getISdunakai());
     }
 
 

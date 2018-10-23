@@ -202,7 +202,8 @@
                 android:id="@+id/video_shutter_im"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
-                android:src="@drawable/shape_video_shutter" />
+                android:background="@drawable/shape_video_shutter"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
