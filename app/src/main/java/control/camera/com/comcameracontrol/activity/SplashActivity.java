@@ -37,9 +37,6 @@ public class SplashActivity extends AppCompatActivity implements App.SockeMsg {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-
-
-
         final int MY_PERMISSION_ACCESS_COARSE_LOCATION = 11;
         final int MY_PERMISSION_ACCESS_FINE_LOCATION = 12;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

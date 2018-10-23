@@ -187,18 +187,6 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.video_shutter:
                 App.getApp().onSendButtonClicked(ContextUtil.SPK1);
-//                if (IsShutterSelected) {
-//                    IsShutterSelected = false;
-//                    video_shutter_im.setSelected(false);
-//                    App.getApp().onSendButtonClicked(ContextUtil.SPK0);
-//                    Toast.makeText(this, "快门关闭", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    IsShutterSelected = true;
-//                    video_shutter_im.setSelected(true);
-//                    App.getApp().onSendButtonClicked(ContextUtil.SPK1);
-//                    Toast.makeText(this, "快门开启", Toast.LENGTH_SHORT).show();
-//                }
-
                 break;
             case R.id.video_course:
                 if (IsCourseSelected) {

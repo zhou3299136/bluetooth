@@ -2,6 +2,9 @@ package control.camera.com.comcameracontrol.frag;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,6 +24,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.czp.library.ArcProgress;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,7 +38,7 @@ import control.camera.com.comcameracontrol.utls.ContextUtil;
 /**
  * 延时拍照
  */
-public class HomeDelayActivity extends AppCompatActivity implements View.OnClickListener ,App.SockeMsg{
+public class HomeDelayActivity extends AppCompatActivity implements View.OnClickListener, App.SockeMsg {
     private String smsg = "";    //显示用数据缓存
     boolean bRun = true;
     boolean bThread = false;
@@ -69,17 +74,19 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
     public boolean direction = false;
 
 
-    public String delayTime="";
-    public String delaynNum="";//拍摄张数
-    public String distance="";
-    public String shutterTime="";
+    public String delayTime = "";
+    public String delaynNum = "";//拍摄张数
+    public String distance = "";
+    public String shutterTime = "";
 
-    public boolean isDelayTime=false;
-    public boolean isDelaynNum=false;
-    public boolean isDistance=false;
-    public boolean isShutterTime=false;
+    public boolean isDelayTime = false;
+    public boolean isDelaynNum = false;
+    public boolean isDistance = false;
+    public boolean isShutterTime = false;
+    public int delaynsum;
+    public int completion = 0;
 
-    public int completion=0;
+    public ArcProgress myProgress;
 
 
     @Override
@@ -113,11 +120,11 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
         delay_ba_im = findViewById(R.id.delay_ba_im);
 
         delay_shutter_time = findViewById(R.id.delay_shutter_time);
-        frag_delay_quantity_progress=findViewById(R.id.frag_delay_quantity_progress);
-        frag_delay_distance_progress=findViewById(R.id.frag_delay_distance_progress);
-        frag_delay_distance_ed=findViewById(R.id.frag_delay_distance_ed);
+        frag_delay_quantity_progress = findViewById(R.id.frag_delay_quantity_progress);
+        frag_delay_distance_progress = findViewById(R.id.frag_delay_distance_progress);
+        frag_delay_distance_ed = findViewById(R.id.frag_delay_distance_ed);
 
-        frag_delay_complete_num=findViewById(R.id.frag_delay_complete_num);
+        frag_delay_complete_num = findViewById(R.id.frag_delay_complete_num);
 
 
         delay_ab.setOnClickListener(this);
@@ -128,10 +135,26 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
         frag_delay_quantity_progress.setMax(100);
         frag_delay_quantity_progress.setProgress(100);
         frag_delay_distance_progress.setMax(100);
+
+        myProgress = findViewById(R.id.myProgress);
     }
 
 
     public void initData() {
+
+        myProgress.setOnCenterDraw(new ArcProgress.OnCenterDraw() {
+            @Override
+            public void draw(Canvas canvas, RectF rectF, float x, float y, float storkeWidth, int progress) {
+                Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                textPaint.setStrokeWidth(35);
+                textPaint.setTextSize(50);
+                textPaint.setColor(getResources().getColor(R.color.white));
+                String progressStr = String.valueOf(progress + "%");
+                float textX = x - (textPaint.measureText(progressStr) / 2);
+                float textY = y - ((textPaint.descent() + textPaint.ascent()) / 2);
+                canvas.drawText(progressStr, textX, textY, textPaint);
+            }
+        });
 
 
         frag_delay_distance_ed.setFocusable(true);
@@ -149,10 +172,10 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
                 //判断是否是“完成”键
                 if (actionId == EditorInfo.IME_ACTION_NEXT) {
                     distance = v.getText().toString();
-                    if (TextUtils.isEmpty(distance)){
+                    if (TextUtils.isEmpty(distance)) {
                         Toast.makeText(HomeDelayActivity.this, "步距离不能为空", Toast.LENGTH_SHORT).show();
-                    }else {
-                        isDistance=true;
+                    } else {
+                        isDistance = true;
                         App.getApp().onSendButtonClicked(ContextUtil.SYBJ + distance + "#");
                         frag_delay_time_ed.requestFocus();
                     }
@@ -172,10 +195,10 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
                 //判断是否是“完成”键
                 if (actionId == EditorInfo.IME_ACTION_NEXT) {
                     delayTime = v.getText().toString();
-                    if (TextUtils.isEmpty(delayTime)){
+                    if (TextUtils.isEmpty(delayTime)) {
                         Toast.makeText(HomeDelayActivity.this, "间隔时间不能为空", Toast.LENGTH_SHORT).show();
-                    }else {
-                        isDelayTime=true;
+                    } else {
+                        isDelayTime = true;
                         App.getApp().onSendButtonClicked(ContextUtil.SYJG + AppUtis.speedTime(delayTime) + "#");
                         frag_delay_num_ed.requestFocus();
                     }
@@ -195,10 +218,11 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
                 //判断是否是“完成”键
                 if (actionId == EditorInfo.IME_ACTION_NEXT) {
                     delaynNum = v.getText().toString();
-                    if (TextUtils.isEmpty(delaynNum)){
+                    delaynsum = Integer.valueOf(delaynNum);
+                    if (TextUtils.isEmpty(delaynNum)) {
                         Toast.makeText(HomeDelayActivity.this, "拍摄数量不能为空", Toast.LENGTH_SHORT).show();
-                    }else {
-                        isDelaynNum=true;
+                    } else {
+                        isDelaynNum = true;
                         App.getApp().onSendButtonClicked(ContextUtil.SYZS + AppUtis.SykDelaynNum(delaynNum) + "#");
                         delay_shutter_time.requestFocus();
                     }
@@ -220,10 +244,10 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
 
                     shutterTime = v.getText().toString();
-                    if (TextUtils.isEmpty(shutterTime)){
+                    if (TextUtils.isEmpty(shutterTime)) {
                         Toast.makeText(HomeDelayActivity.this, "快门时间不能为空", Toast.LENGTH_SHORT).show();
-                    }else {
-                        isShutterTime=true;
+                    } else {
+                        isShutterTime = true;
                         App.getApp().onSendButtonClicked(ContextUtil.SYKS + AppUtis.shutterTime(shutterTime) + "#");
                         //隐藏软键盘
                         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -236,7 +260,22 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
                 return false;
             }
         });
+    }
 
+
+    public void SetProgre(int sum) {
+        double a = sum / delaynsum;
+        double c = Double.valueOf(AppUtis.formatTo￥_Ceiling(a));
+        double b = c * 100;
+        int x = Integer.valueOf(AppUtis.formatTo￥(b));
+        myProgress.setProgress(x);
+        frag_delay_complete_num.setText("" + sum);
+        if (sum==delaynsum){
+            IsStartSelected = false;
+            delay_start_im.setSelected(false);
+            delay_start_tv.setText("开始");
+            App.getApp().onSendButtonClicked(ContextUtil.SYTZ);
+        }
     }
 
 
@@ -263,16 +302,16 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
             case R.id.delay_start:
 
                 if (!direction) {
-                        Toast.makeText(this, "请选择运动方向", Toast.LENGTH_SHORT).show();
-                }else if (!isDistance){
+                    Toast.makeText(this, "请选择运动方向", Toast.LENGTH_SHORT).show();
+                } else if (!isDistance) {
                     Toast.makeText(this, "请输入步距值", Toast.LENGTH_SHORT).show();
-                }else if (!isDelayTime){
+                } else if (!isDelayTime) {
                     Toast.makeText(this, "请输入间隔时间", Toast.LENGTH_SHORT).show();
-                }else if (!isDelaynNum){
+                } else if (!isDelaynNum) {
                     Toast.makeText(this, "请输入拍摄张数", Toast.LENGTH_SHORT).show();
-                }else if (!isShutterTime){
+                } else if (!isShutterTime) {
                     Toast.makeText(this, "请输入按下快门时间", Toast.LENGTH_SHORT).show();
-                }else {
+                } else {
                     if (IsStartSelected) {
                         IsStartSelected = false;
                         delay_start_im.setSelected(false);
@@ -306,10 +345,10 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onMessAge(String message) {
-        if (message.contains("SYWC")){
-            String num=message.substring(5,message.length());
-            num.replace("#","");
-            frag_delay_complete_num.setText(""+Integer.parseInt(num));
+        if (message.contains("SYWC")) {
+            String num = message.substring(5, message.length());
+            num.replace("#", "");
+            SetProgre(Integer.parseInt(num));
         }
     }
 
@@ -323,6 +362,7 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
     }
 
     private long mExitTime = 0;
+
     private void exitApp() {
         if ((System.currentTimeMillis() - mExitTime) > 2000) {
             Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
@@ -339,4 +379,6 @@ public class HomeDelayActivity extends AppCompatActivity implements View.OnClick
             System.exit(0);
         }
     }
+
+
 }

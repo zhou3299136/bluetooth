@@ -1,5 +1,8 @@
 package control.camera.com.comcameracontrol.utls;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 public class AppUtis {
 
 
@@ -42,6 +45,21 @@ public class AppUtis {
         }
         return speed;
     }
+
+    public static String  formatTo￥_Ceiling(double floatNo) {
+        DecimalFormat format = new DecimalFormat("##0.0000");
+        format.setRoundingMode(RoundingMode.CEILING);
+        DecimalFormat format2 = new DecimalFormat("##0.00");
+        return format2.format(Double.valueOf(format.format(floatNo)));
+    }
+
+    public static String  formatTo￥(double floatNo) {
+        DecimalFormat format = new DecimalFormat("##0");
+        format.setRoundingMode(RoundingMode.CEILING);
+        DecimalFormat format2 = new DecimalFormat("##0");
+        return format2.format(Double.valueOf(format.format(floatNo)));
+    }
+
 
 
 }

@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:background="@mipmap/backad_bg"
     android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:ignore="ResAuto">
 
     <LinearLayout
@@ -186,11 +187,14 @@
                 android:layout_marginTop="36dp"
                 android:orientation="horizontal">
 
-                <control.camera.com.comcameracontrol.View.CirclePgBar
-                    android:id="@+id/frag_delay_CirclePgBar"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp" />
-
+                <com.czp.library.ArcProgress
+                    android:id="@+id/myProgress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:degree="1"
+                    app:radius="50dp"
+                    app:progressColor="@color/huang"
+                    app:progressStyle="arc" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
