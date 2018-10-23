@@ -113,6 +113,7 @@ public class HomeVideoActivity extends AppCompatActivity implements View.OnClick
         main_frame_video.setSelected(true);
 
 
+
         frag_video_quantity_progress.setMax(100);
         frag_video_quantity_progress.setProgress(100);
 

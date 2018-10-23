@@ -93,7 +93,7 @@
     <SeekBar
         android:id="@+id/frag_video_quantity_seek"
         android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:layout_height="20dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="13dp"
         android:layout_marginTop="10dp"
